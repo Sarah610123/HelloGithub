@@ -400,10 +400,10 @@
     width: 6px; height: 6px; border-radius: 50%;
     display: inline-block;
   }
-  .status.completed::before { background: var(--ink); }
+  .status.completed::before { background: #2d6a4f; }
   .status.airing::before    { background: transparent; border: 1.4px solid var(--ink); }
   .status.verify::before    { background: transparent; border: 1.4px dashed var(--accent); }
-  .status.completed { color: var(--ink); }
+  .status.completed { color: #2d6a4f; font-weight: 700; letter-spacing: 0.18em; }
   .status.airing    { color: var(--ink); }
   .status.verify    { color: var(--accent); }
 
@@ -583,7 +583,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-terracotta">
+          <div class="poster v-terracotta" data-status="airing" data-eps-aired="4" data-eps-total="14" data-next-air="2026-05-22">
             <div class="poster-body">
               <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
               <h3 class="poster-title">My Royal Nemesis</h3>
@@ -597,7 +597,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ochre">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="10" data-eps-total="12">
             <div class="poster-body">
               <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
               <h3 class="poster-title">Sold Out On You</h3>
@@ -661,7 +661,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-status="completed" data-eps-total="8">
             <div class="poster-body">
               <div class="poster-top"><span>Action</span><span>K-Drama</span></div>
               <h3 class="poster-title">Bloodhounds</h3>
@@ -689,7 +689,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ochre">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="10" data-eps-total="12">
             <div class="poster-body">
               <div class="poster-top"><span>Comedy</span><span>K-Drama</span></div>
               <h3 class="poster-title">We Are All Trying Here</h3>
@@ -711,7 +711,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-status="airing" data-eps-aired="10" data-eps-total="12">
             <div class="poster-body">
               <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
               <h3 class="poster-title">Scarecrow</h3>
@@ -805,7 +805,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>J-Drama</span></div>
               <h3 class="poster-title">Straight to Hell</h3>
@@ -836,7 +836,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-cream">
+          <div class="poster v-cream" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Dark Comedy</span><span>Series</span></div>
               <h3 class="poster-title">Off Campus</h3>
@@ -850,7 +850,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-terracotta">
+          <div class="poster v-terracotta" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Comedy</span><span>Series</span></div>
               <h3 class="poster-title">Margo's Got Money Troubles</h3>
@@ -878,7 +878,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-clay">
+          <div class="poster v-clay" data-status="airing" data-eps-aired="2">
             <div class="poster-body">
               <div class="poster-top"><span>Comedy</span><span>Series</span></div>
               <h3 class="poster-title">Maximum Pleasure Guaranteed</h3>
@@ -914,7 +914,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-midnight" data-poster-id="224941" data-poster-type="tv">
+          <div class="poster v-midnight" data-poster-id="224941" data-poster-type="tv" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Thriller</span><span>Series</span></div>
               <h3 class="poster-title">The Boroughs</h3>
@@ -928,9 +928,9 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-status="airing" data-eps-aired="5" data-eps-total="10">
             <div class="poster-body">
-              <div class="poster-top"><span>Horror</span><span>Series</span></div>
+              <div class="poster-top"><span>Horror</span><span>Series · S4</span></div>
               <h3 class="poster-title">From</h3>
               <div class="poster-bottom"><span class="flag">🇺🇸</span><span>S4 incoming</span></div>
             </div>
@@ -978,7 +978,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-sage">
+          <div class="poster v-sage" data-status="airing" data-eps-aired="5">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>Series</span></div>
               <h3 class="poster-title">Widow's Bay</h3>
@@ -1006,7 +1006,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>Series</span></div>
               <h3 class="poster-title">Unchosen</h3>
@@ -1020,7 +1020,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-clay">
+          <div class="poster v-clay" data-status="airing" data-eps-aired="8" data-eps-total="10">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>Series</span></div>
               <h3 class="poster-title">Gold Land</h3>
@@ -1034,7 +1034,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-sage" data-poster-id="299167" data-poster-type="tv">
+          <div class="poster v-sage" data-poster-id="299167" data-poster-type="tv" data-status="airing" data-eps-aired="2" data-eps-total="9">
             <div class="poster-body">
               <div class="poster-top"><span>Western</span><span>Series</span></div>
               <h3 class="poster-title">Dutton Ranch</h3>
@@ -1048,7 +1048,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-clay" data-poster-id="259702" data-poster-type="tv">
+          <div class="poster v-clay" data-poster-id="259702" data-poster-type="tv" data-status="completed">
             <div class="poster-body">
               <div class="poster-top"><span>Magical Realism</span><span>Series</span></div>
               <h3 class="poster-title">The House of the Spirits</h3>
@@ -1221,7 +1221,7 @@
     <div class="bloc-head">
       <div class="bloc-num">05</div>
       <h2 class="bloc-title">Anime</h2>
-      <div class="bloc-meta">9 titles<br/>🇯🇵 Animation</div>
+      <div class="bloc-meta">8 titles<br/>🇯🇵 Animation</div>
     </div>
 
     <div class="subcat">
@@ -1243,9 +1243,9 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ochre">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="8" data-eps-total="13">
             <div class="poster-body">
-              <div class="poster-top"><span>Fantasy</span><span>Anime · TBA</span></div>
+              <div class="poster-top"><span>Fantasy</span><span>Anime</span></div>
               <h3 class="poster-title">Witch Hat Atelier</h3>
               <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Manga ongoing</span></div>
             </div>
@@ -1257,7 +1257,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-clay">
+          <div class="poster v-clay" data-status="airing" data-eps-aired="7" data-eps-total="12">
             <div class="poster-body">
               <div class="poster-top"><span>Historical</span><span>Anime</span></div>
               <h3 class="poster-title">Nippon Sangoku</h3>
@@ -1271,7 +1271,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ink" data-poster-id="260463" data-poster-type="tv">
+          <div class="poster v-ink" data-poster-id="260463" data-poster-type="tv" data-status="airing" data-eps-aired="7" data-eps-total="24">
             <div class="poster-body">
               <div class="poster-top"><span>Dark Fantasy</span><span>Anime</span></div>
               <h3 class="poster-title">Daemons of the Shadow Realm</h3>
@@ -1290,20 +1290,6 @@
     <div class="subcat">
       <div class="subcat-label"><h3>Drama &amp; Strange Worlds</h3><small>The strange-shaped shelf</small></div>
       <div class="poster-grid">
-
-        <article class="card">
-          <div class="poster v-cream">
-            <div class="poster-body">
-              <div class="poster-top"><span>Drama</span><span>Anime</span></div>
-              <h3 class="poster-title">Classroom of the Elite</h3>
-              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>S3</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">Classroom of the Elite</p>
-            <div class="c-meta"><span class="status airing">S3 — recent</span><span class="sep"></span><span>Crunchyroll</span></div>
-          </div>
-        </article>
 
         <article class="card">
           <div class="poster v-terracotta">
@@ -1379,7 +1365,7 @@
       </div>
     </div>
     <div class="right">
-      48 titles · 5 shelves<br/>
+      47 titles · 5 shelves<br/>
       Vol. I — MMXXVI
     </div>
   </footer>
@@ -1496,6 +1482,44 @@
     }
   }
 
+  function readOverride(poster) {
+    const st = poster.dataset.status;
+    const aired = poster.dataset.epsAired;
+    const total = poster.dataset.epsTotal;
+    const next = poster.dataset.nextAir;
+    if (!st && !aired && !total && !next) return null;
+    return {
+      status: st || null,
+      aired: aired ? parseInt(aired, 10) : null,
+      total: total ? parseInt(total, 10) : null,
+      nextAir: next || null,
+    };
+  }
+
+  function formatDate(iso) {
+    const m = (iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return iso;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
+  }
+
+  function formatOverride(o) {
+    if (!o) return null;
+    if (o.status === "completed") {
+      return { cls: "completed", label: "Completed", detail: o.total ? `${o.total} eps` : "" };
+    }
+    if (o.status === "airing" || o.aired != null) {
+      let detail = "";
+      if (o.aired != null && o.total != null) detail = `${o.aired} of ${o.total} eps`;
+      else if (o.aired != null) detail = `${o.aired} eps so far`;
+      return { cls: "airing", label: "Airing", detail };
+    }
+    if (o.status === "upcoming") {
+      return { cls: "verify", label: "Upcoming", detail: o.nextAir ? formatDate(o.nextAir) : "" };
+    }
+    return null;
+  }
+
   function formatStatus(d) {
     if (!d) return null;
     if (d.type === "tv") {
@@ -1541,9 +1565,11 @@
     const caption = card.querySelector(".caption");
     if (!caption) return;
 
-    // Refresh status + episode count from TMDB.
+    // Refresh status + episode count. Manual overrides on the poster div
+    // take precedence over TMDB-derived numbers.
     const meta = caption.querySelector(".c-meta");
-    const s = formatStatus(details);
+    const override = readOverride(poster);
+    const s = formatOverride(override) || formatStatus(details);
     if (meta && s) {
       const status = document.createElement("span");
       status.className = `status ${s.cls}`;
@@ -1555,6 +1581,13 @@
         const det = document.createElement("span");
         det.textContent = s.detail;
         meta.append(sep, det);
+      }
+      if (override && override.nextAir && s.cls === "airing") {
+        const sep = document.createElement("span");
+        sep.className = "sep";
+        const next = document.createElement("span");
+        next.textContent = `Next: ${formatDate(override.nextAir)}`;
+        meta.append(sep, next);
       }
     }
 
