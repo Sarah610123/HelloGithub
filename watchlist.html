@@ -376,6 +376,14 @@
     width: 3px; height: 3px; border-radius: 50%; background: var(--hair);
     flex-shrink: 0;
   }
+  .caption .c-overview {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--muted);
+    margin: 4px 0 0;
+    font-weight: 400;
+  }
 
   /* status dots */
   .status {
@@ -1403,7 +1411,7 @@
   }
 
   const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-  const CACHE_KEY = "tmdb-poster-cache-v2";
+  const CACHE_KEY = "tmdb-details-cache-v3";
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
   let cacheDirty = false;
@@ -1417,26 +1425,41 @@
     return null;
   }
 
-  // OMDb-style "series" → TMDB's "tv"
+  // Accept "series" (provider-neutral) as alias for TMDB's "tv"
   function tmdbType(t) {
     if (!t) return null;
     if (t === "series") return "tv";
     return t;
   }
 
-  async function searchByTitle(query, type) {
+  // First sentence if short, otherwise truncate at word boundary.
+  function shortDescription(text, maxChars) {
+    if (!text) return "";
+    const t = text.trim();
+    const m = t.match(/^[^.!?]+[.!?]/);
+    if (m && m[0].length <= maxChars) return m[0].trim();
+    if (t.length <= maxChars) return t;
+    const cut = t.slice(0, maxChars);
+    const sp = cut.lastIndexOf(" ");
+    return cut.slice(0, sp > 0 ? sp : maxChars).trim() + "…";
+  }
+
+  async function tmdbGet(path) {
+    const url = `https://api.themoviedb.org/3${path}${path.includes("?") ? "&" : "?"}api_key=${TMDB_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  }
+
+  // Resolve a poster card to a TMDB id + type via search, when no id is pinned.
+  async function resolveByTitle(query, type) {
     const key = `s::${type || "multi"}::${query}`;
     if (key in cache) return cache[key];
-    const endpoint = type
-      ? `https://api.themoviedb.org/3/search/${type}`
-      : "https://api.themoviedb.org/3/search/multi";
-    const url = `${endpoint}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const endpoint = type ? `/search/${type}` : "/search/multi";
+      const data = await tmdbGet(`${endpoint}?query=${encodeURIComponent(query)}&include_adult=false`);
       const hit = (data.results || []).find(r => r.poster_path);
-      cache[key] = hit ? hit.poster_path : null;
+      cache[key] = hit ? { id: hit.id, type: hit.media_type || type } : null;
       cacheDirty = true;
       return cache[key];
     } catch (e) {
@@ -1445,19 +1468,102 @@
     }
   }
 
-  async function fetchById(id, type) {
-    const key = `id::${type}::${id}`;
+  async function fetchDetails(id, type) {
+    const key = `d::${type}::${id}`;
     if (key in cache) return cache[key];
     try {
-      const res = await fetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      cache[key] = data.poster_path || null;
+      const data = await tmdbGet(`/${type}/${id}`);
+      const out = {
+        type,
+        poster_path: data.poster_path || null,
+        overview: data.overview || "",
+      };
+      if (type === "tv") {
+        out.episodes = data.number_of_episodes || 0;
+        out.status = data.status || "";
+        out.next_episode = data.next_episode_to_air || null;
+      } else if (type === "movie") {
+        out.runtime = data.runtime || 0;
+        out.release_date = data.release_date || "";
+        out.status = data.status || "";
+      }
+      cache[key] = out;
       cacheDirty = true;
-      return cache[key];
+      return out;
     } catch (e) {
-      console.warn("[Watchlist] TMDB id fetch failed:", type, id, e);
+      console.warn("[Watchlist] TMDB details fetch failed:", type, id, e);
       return null;
+    }
+  }
+
+  function formatStatus(d) {
+    if (!d) return null;
+    if (d.type === "tv") {
+      const eps = d.episodes;
+      const ended = d.status === "Ended" || d.status === "Canceled";
+      if (ended) {
+        return { cls: "completed", label: "Completed", detail: eps ? `${eps} eps` : "" };
+      }
+      if (eps > 0) {
+        return { cls: "airing", label: "Airing", detail: `${eps} eps so far` };
+      }
+      return { cls: "verify", label: "Upcoming", detail: "" };
+    }
+    if (d.type === "movie") {
+      if (d.status === "Released") {
+        const yr = (d.release_date || "").slice(0, 4);
+        const rt = d.runtime ? `${d.runtime} min` : "";
+        const detail = [yr, rt].filter(Boolean).join(" · ");
+        return { cls: "completed", label: "Released", detail };
+      }
+      return { cls: "verify", label: "Upcoming", detail: d.release_date || "" };
+    }
+    return null;
+  }
+
+  function applyToCard(poster, details) {
+    if (!details) return;
+    const titleEl = poster.querySelector(".poster-title");
+    const titleText = titleEl ? titleEl.textContent.trim() : "";
+
+    // Inject poster image if none present.
+    if (details.poster_path && !poster.querySelector("img")) {
+      const img = new Image();
+      img.src = `${IMG_BASE}${details.poster_path}`;
+      img.alt = titleText;
+      img.loading = "lazy";
+      img.decoding = "async";
+      poster.insertBefore(img, poster.firstChild);
+    }
+
+    const card = poster.closest(".card");
+    if (!card) return;
+    const caption = card.querySelector(".caption");
+    if (!caption) return;
+
+    // Refresh status + episode count from TMDB.
+    const meta = caption.querySelector(".c-meta");
+    const s = formatStatus(details);
+    if (meta && s) {
+      const status = document.createElement("span");
+      status.className = `status ${s.cls}`;
+      status.textContent = s.label;
+      meta.replaceChildren(status);
+      if (s.detail) {
+        const sep = document.createElement("span");
+        sep.className = "sep";
+        const det = document.createElement("span");
+        det.textContent = s.detail;
+        meta.append(sep, det);
+      }
+    }
+
+    // Append the overview (skip if already present in markup).
+    if (details.overview && !caption.querySelector(".c-overview")) {
+      const p = document.createElement("p");
+      p.className = "c-overview";
+      p.textContent = shortDescription(details.overview, 180);
+      caption.appendChild(p);
     }
   }
 
@@ -1465,36 +1571,33 @@
   let filled = 0, missed = 0;
 
   for (const poster of posters) {
-    if (poster.querySelector("img")) continue;
-
     const titleEl = poster.querySelector(".poster-title");
     if (!titleEl) continue;
 
-    const id = poster.dataset.posterId;
-    const type = tmdbType(poster.dataset.posterType || inheritType(poster));
+    const pinnedId = poster.dataset.posterId;
+    const pinnedType = tmdbType(poster.dataset.posterType || inheritType(poster));
     const query = poster.dataset.posterSearch || titleEl.textContent.trim();
 
-    const path = (id && type)
-      ? await fetchById(id, type)
-      : await searchByTitle(query, type);
-
-    if (path) {
-      const img = new Image();
-      img.src = `${IMG_BASE}${path}`;
-      img.alt = titleEl.textContent.trim();
-      img.loading = "lazy";
-      img.decoding = "async";
-      poster.insertBefore(img, poster.firstChild);
-      filled++;
-    } else {
-      missed++;
+    let id = pinnedId, type = pinnedType;
+    if (!id) {
+      const resolved = await resolveByTitle(query, type);
+      if (!resolved) { missed++; continue; }
+      id = resolved.id;
+      type = resolved.type;
     }
+    if (!type) { missed++; continue; }
+
+    const details = await fetchDetails(id, type);
+    if (!details) { missed++; continue; }
+
+    applyToCard(poster, details);
+    if (details.poster_path) filled++; else missed++;
   }
 
   if (cacheDirty) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
   }
-  console.info(`[Watchlist] TMDB posters: ${filled} filled, ${missed} not found.`);
+  console.info(`[Watchlist] TMDB: ${filled} posters filled, ${missed} not found.`);
 })();
 </script>
 </body>
