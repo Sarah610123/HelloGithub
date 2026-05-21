@@ -1397,7 +1397,8 @@
   }
 
   const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-  const CACHE_KEY = "tmdb-details-cache-v3";
+  const CACHE_KEY = "tmdb-details-cache-v4";
+  const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h — picks up newly-aired eps
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
   let cacheDirty = false;
@@ -1456,7 +1457,8 @@
 
   async function fetchDetails(id, type) {
     const key = `d::${type}::${id}`;
-    if (key in cache) return cache[key];
+    const entry = cache[key];
+    if (entry && entry.ts && (Date.now() - entry.ts) < CACHE_TTL_MS) return entry.value;
     try {
       const data = await tmdbGet(`/${type}/${id}`);
       const out = {
@@ -1465,15 +1467,20 @@
         overview: data.overview || "",
       };
       if (type === "tv") {
-        out.episodes = data.number_of_episodes || 0;
         out.status = data.status || "";
+        out.last_episode = data.last_episode_to_air || null;   // {episode_number, season_number, air_date, ...}
         out.next_episode = data.next_episode_to_air || null;
+        out.seasons = (data.seasons || []).map(s => ({
+          season_number: s.season_number,
+          episode_count: s.episode_count,
+        }));
+        out.total_episodes = data.number_of_episodes || 0;
       } else if (type === "movie") {
         out.runtime = data.runtime || 0;
         out.release_date = data.release_date || "";
         out.status = data.status || "";
       }
-      cache[key] = out;
+      cache[key] = { ts: Date.now(), value: out };
       cacheDirty = true;
       return out;
     } catch (e) {
@@ -1523,13 +1530,43 @@
   function formatStatus(d) {
     if (!d) return null;
     if (d.type === "tv") {
-      const eps = d.episodes;
       const ended = d.status === "Ended" || d.status === "Canceled";
-      if (ended) {
-        return { cls: "completed", label: "Completed", detail: eps ? `${eps} eps` : "" };
+      const last = d.last_episode;
+      const next = d.next_episode;
+
+      // Per-current-season counts, derived from last_episode_to_air.
+      let aired = null, total = null, season = null;
+      if (last) {
+        aired = last.episode_number;
+        season = last.season_number;
+        const s = (d.seasons || []).find(x => x.season_number === season);
+        if (s) total = s.episode_count;
       }
-      if (eps > 0) {
-        return { cls: "airing", label: "Airing", detail: `${eps} eps so far` };
+
+      const seasonSuffix = (season && season > 1) ? ` · S${season}` : "";
+
+      // Completely finished: no future episode, status ended/canceled.
+      if (ended && !next) {
+        if (aired != null && total != null) {
+          return { cls: "completed", label: "Completed", detail: `${total} eps${seasonSuffix}` };
+        }
+        return { cls: "completed", label: "Completed", detail: d.total_episodes ? `${d.total_episodes} eps` : "" };
+      }
+
+      // Current season fully aired, next season is scheduled.
+      if (aired != null && total != null && aired >= total && next && next.season_number > season) {
+        return { cls: "completed", label: `S${season} complete`, detail: `${total} eps` };
+      }
+
+      // Still airing this season.
+      if (aired != null && total != null) {
+        return { cls: "airing", label: "Airing", detail: `${aired} of ${total} eps${seasonSuffix}` };
+      }
+      if (aired != null) {
+        return { cls: "airing", label: "Airing", detail: `${aired} eps so far${seasonSuffix}` };
+      }
+      if (d.total_episodes > 0) {
+        return { cls: "airing", label: "Airing", detail: `${d.total_episodes} eps so far` };
       }
       return { cls: "verify", label: "Upcoming", detail: "" };
     }
@@ -1582,11 +1619,14 @@
         det.textContent = s.detail;
         meta.append(sep, det);
       }
-      if (override && override.nextAir && s.cls === "airing") {
+      const nextAirIso = (override && override.nextAir)
+        || (details.next_episode && details.next_episode.air_date)
+        || null;
+      if (nextAirIso && s.cls === "airing") {
         const sep = document.createElement("span");
         sep.className = "sep";
         const next = document.createElement("span");
-        next.textContent = `Next: ${formatDate(override.nextAir)}`;
+        next.textContent = `Next: ${formatDate(nextAirIso)}`;
         meta.append(sep, next);
       }
     }
