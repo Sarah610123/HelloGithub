@@ -1619,10 +1619,13 @@
         det.textContent = s.detail;
         meta.append(sep, det);
       }
+      // Show the next-air date whenever there's a known upcoming episode.
+      // TMDB returns null for next_episode_to_air on truly ended shows, so
+      // this naturally skips Completed series and movies.
       const nextAirIso = (override && override.nextAir)
         || (details.next_episode && details.next_episode.air_date)
         || null;
-      if (nextAirIso && s.cls === "airing") {
+      if (nextAirIso) {
         const sep = document.createElement("span");
         sep.className = "sep";
         const next = document.createElement("span");
