@@ -151,9 +151,20 @@
 
   /* ---------- SECTION ---------- */
   section.bloc {
+    --section-accent: var(--accent);
     padding: 56px 0 24px;
     border-bottom: 1px solid var(--hair);
+    position: relative;
   }
+  section.bloc::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 72px; height: 3px;
+    background: var(--section-accent);
+  }
+  section.bloc.is-films { --section-accent: var(--ochre); }
+  section.bloc.is-anime { --section-accent: #4a6072; }
   section.bloc:last-of-type { border-bottom: none; }
 
   .bloc-head {
@@ -168,7 +179,7 @@
     font-weight: 500;
     font-size: 42px;
     line-height: 1;
-    color: var(--accent);
+    color: var(--section-accent, var(--accent));
     letter-spacing: -0.04em;
   }
   .bloc-title {
@@ -205,7 +216,7 @@
     display: inline-block;
     width: 22px;
     height: 1px;
-    background: var(--accent);
+    background: var(--section-accent, var(--accent));
     transform: translateY(-4px);
   }
   .subcat-label h3 {
@@ -541,7 +552,7 @@
     <div class="bloc-head">
       <div class="bloc-num">01</div>
       <h2 class="bloc-title">Korean Dramas</h2>
-      <div class="bloc-meta">16 titles<br/>🇰🇷 Series</div>
+      <div class="bloc-meta">14 titles<br/>🇰🇷 Series</div>
     </div>
 
     <!-- Romance -->
@@ -692,20 +703,6 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-midnight">
-            <div class="poster-body">
-              <div class="poster-top"><span>Mystery</span><span>K-Drama</span></div>
-              <h3 class="poster-title">The Women in the White Car</h3>
-              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">The Women in the White Car</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-        <article class="card">
           <div class="poster v-ink">
             <div class="poster-body">
               <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
@@ -734,7 +731,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-sage">
+          <div class="poster v-sage" data-poster-id="287346" data-poster-type="tv">
             <div class="poster-body">
               <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
               <h3 class="poster-title">Honour</h3>
@@ -764,43 +761,21 @@
       </div>
     </div>
 
-    <!-- Historical -->
-    <div class="subcat">
-      <div class="subcat-label"><h3>Historical</h3><small>Ink, silk, ceremony</small></div>
-      <div class="poster-grid">
-
-        <article class="card">
-          <div class="poster v-clay">
-            <div class="poster-body">
-              <div class="poster-top"><span>Sageuk</span><span>K-Drama</span></div>
-              <h3 class="poster-title">The Man Who Lives With the King</h3>
-              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">The Man Who Lives With the King</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-      </div>
-    </div>
-
     <!-- Sports -->
     <div class="subcat">
       <div class="subcat-label"><h3>Sports</h3><small>The training-montage shelf</small></div>
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-ochre">
+          <div class="poster v-ochre" data-poster-id="280948" data-poster-type="tv">
             <div class="poster-body">
               <div class="poster-top"><span>Sports</span><span>K-Drama</span></div>
-              <h3 class="poster-title">Sprint Fever</h3>
+              <h3 class="poster-title">Spring Fever</h3>
               <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Track</span></div>
             </div>
           </div>
           <div class="caption">
-            <p class="c-title">Sprint Fever</p>
+            <p class="c-title">Spring Fever</p>
             <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
@@ -858,7 +833,7 @@
     <div class="bloc-head">
       <div class="bloc-num">03</div>
       <h2 class="bloc-title">English-Language Series</h2>
-      <div class="bloc-meta">18 titles<br/>🇬🇧 🇺🇸 Series</div>
+      <div class="bloc-meta">15 titles<br/>🇬🇧 🇺🇸 Series</div>
     </div>
 
     <!-- Dark Comedy -->
@@ -909,20 +884,6 @@
         </article>
 
         <article class="card">
-          <div class="poster v-sage">
-            <div class="poster-body">
-              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
-              <h3 class="poster-title">The Christophers</h3>
-              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">The Christophers</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-        <article class="card">
           <div class="poster v-clay">
             <div class="poster-body">
               <div class="poster-top"><span>Comedy</span><span>Series</span></div>
@@ -959,15 +920,15 @@
         </article>
 
         <article class="card">
-          <div class="poster v-midnight">
+          <div class="poster v-midnight" data-poster-id="224941" data-poster-type="tv">
             <div class="poster-body">
               <div class="poster-top"><span>Thriller</span><span>Series</span></div>
-              <h3 class="poster-title">The Borough</h3>
-              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+              <h3 class="poster-title">The Boroughs</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
             </div>
           </div>
           <div class="caption">
-            <p class="c-title">The Borough</p>
+            <p class="c-title">The Boroughs</p>
             <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
@@ -1014,20 +975,6 @@
           </div>
         </article>
 
-        <article class="card">
-          <div class="poster v-ink">
-            <div class="poster-body">
-              <div class="poster-top"><span>Horror</span><span>Series</span></div>
-              <h3 class="poster-title">Cold Storage</h3>
-              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">Cold Storage</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
       </div>
     </div>
 
@@ -1065,48 +1012,6 @@
         </article>
 
         <article class="card">
-          <div class="poster v-cream">
-            <div class="poster-body">
-              <div class="poster-top"><span>Drama</span><span>Series</span></div>
-              <h3 class="poster-title">Mother Mary</h3>
-              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">Mother Mary</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="poster v-midnight">
-            <div class="poster-body">
-              <div class="poster-top"><span>Drama</span><span>Series</span></div>
-              <h3 class="poster-title">Normal</h3>
-              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">Normal</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-        <article class="card">
-          <div class="poster v-terracotta">
-            <div class="poster-body">
-              <div class="poster-top"><span>Drama</span><span>Series</span></div>
-              <h3 class="poster-title">The Bride</h3>
-              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">The Bride</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
-        <article class="card">
           <div class="poster v-ink">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>Series</span></div>
@@ -1135,7 +1040,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-sage" data-poster-search="Yellowstone">
+          <div class="poster v-sage" data-poster-id="299167" data-poster-type="tv">
             <div class="poster-body">
               <div class="poster-top"><span>Western</span><span>Series</span></div>
               <h3 class="poster-title">Dutton Ranch</h3>
@@ -1148,24 +1053,38 @@
           </div>
         </article>
 
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="259702" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Magical Realism</span><span>Series</span></div>
+              <h3 class="poster-title">The House of the Spirits</h3>
+              <div class="poster-bottom"><span class="flag">🇪🇸</span><span>Allende</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The House of the Spirits</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Isabel Allende</span></div>
+          </div>
+        </article>
+
       </div>
     </div>
   </section>
 
   <!-- ========== IV. FILMS ========== -->
-  <section class="bloc" data-poster-type="movie">
+  <section class="bloc is-films" data-poster-type="movie">
     <div class="bloc-head">
       <div class="bloc-num">04</div>
       <h2 class="bloc-title">Films</h2>
-      <div class="bloc-meta">4 titles<br/>Cinema</div>
+      <div class="bloc-meta">9 titles<br/>Cinema</div>
     </div>
 
     <div class="subcat">
-      <div class="subcat-label"><h3>Feature-Length</h3><small>One evening, one sitting</small></div>
+      <div class="subcat-label"><h3>Korean Films</h3><small>From Seoul, in 90 minutes</small></div>
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-midnight" data-poster-id="1317512" data-poster-type="movie">
+          <div class="poster v-clay" data-poster-id="1317512" data-poster-type="movie">
             <div class="poster-body">
               <div class="poster-top"><span>Romance</span><span>Film</span></div>
               <h3 class="poster-title">The World of Love</h3>
@@ -1174,7 +1093,98 @@
           </div>
           <div class="caption">
             <p class="c-title">The World of Love</p>
-            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Korean film</span></div>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="987470" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Mystery</span><span>Film</span></div>
+              <h3 class="poster-title">The Women in the White Car</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Korean</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Women in the White Car</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-poster-id="1321179" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Sageuk</span><span>Film</span></div>
+              <h3 class="poster-title">The Man Who Lives With the King</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>King's Warden</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Man Who Lives With the King</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>aka King's Warden</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>English-Language Films</h3><small>One evening, one sitting</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ochre" data-poster-id="1400357" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Film</span></div>
+              <h3 class="poster-title">The Christophers</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Christophers</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-cream" data-poster-id="1102883" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Mother Mary</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Mother Mary</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="1242332" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Normal</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Normal</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta" data-poster-id="1159831" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">The Bride</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Bride</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -1193,7 +1203,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-ink">
+          <div class="poster v-ink" data-poster-id="843342" data-poster-type="movie">
             <div class="poster-body">
               <div class="poster-top"><span>Tragedy</span><span>Film</span></div>
               <h3 class="poster-title">Hamlet</h3>
@@ -1206,20 +1216,6 @@
           </div>
         </article>
 
-        <article class="card">
-          <div class="poster v-clay">
-            <div class="poster-body">
-              <div class="poster-top"><span>Magical Realism</span><span>Film</span></div>
-              <h3 class="poster-title">The House of Spirits</h3>
-              <div class="poster-bottom"><span class="flag">🇨🇱</span><span>Allende</span></div>
-            </div>
-          </div>
-          <div class="caption">
-            <p class="c-title">The House of Spirits</p>
-            <div class="c-meta"><span class="status verify">To verify</span></div>
-          </div>
-        </article>
-
       </div>
     </div>
   </section>
@@ -1227,7 +1223,7 @@
   <div class="ornament">· · · · ·</div>
 
   <!-- ========== V. ANIME ========== -->
-  <section class="bloc" data-poster-type="series">
+  <section class="bloc is-anime" data-poster-type="series">
     <div class="bloc-head">
       <div class="bloc-num">05</div>
       <h2 class="bloc-title">Anime</h2>
@@ -1239,7 +1235,7 @@
       <div class="poster-grid">
 
         <article class="card">
-          <div class="poster v-midnight">
+          <div class="poster v-midnight" data-poster-id="209867" data-poster-type="tv">
             <div class="poster-body">
               <div class="poster-top"><span>Fantasy</span><span>Anime · 28 eps</span></div>
               <h3 class="poster-title">Frieren: Beyond Journey's End</h3>
