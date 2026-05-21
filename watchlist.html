@@ -266,6 +266,25 @@
       0 12px 24px -16px rgba(26, 24, 20, 0.5);
   }
 
+  /* Completed checkmark — appears on any card whose poster has data-status="completed" */
+  .poster[data-status="completed"]::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #2d6a4f;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf6ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(45, 106, 79, 0.4);
+    pointer-events: none;
+  }
+
   /* User-supplied image — drop an <img> inside .poster and it covers everything */
   .poster > img {
     position: absolute;
