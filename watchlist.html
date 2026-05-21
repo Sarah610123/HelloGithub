@@ -1403,7 +1403,7 @@
     return;
   }
 
-  const CACHE_KEY = "watchlist-omdb-trakt-v2"; // bumped after adding TMDB poster fallback
+  const CACHE_KEY = "watchlist-omdb-trakt-v3"; // bumped after reordering poster source to TMDB-first when pinned
   const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
@@ -1684,7 +1684,13 @@
     const query = poster.dataset.posterSearch || title;
     const isTV = (type === "tv");
 
-    // Resolve via Trakt to discover slug + IMDb id (when not pinned).
+    // 1. When data-poster-id is pinned, fetch the TMDB poster FIRST.
+    //    This guarantees your manually-verified posters always render even
+    //    when OMDb's title search lands on a different show by mistake.
+    let posterUrl = null;
+    if (tmdbId) posterUrl = await tmdbPosterByTmdbId(tmdbId, type);
+
+    // 2. Resolve via Trakt to discover slug + IMDb id (when not pinned).
     let traktItem = null;
     if (imdbId)       traktItem = await traktByImdb(imdbId);
     else if (tmdbId)  traktItem = await traktByTmdb(tmdbId, type);
@@ -1693,19 +1699,14 @@
     const resolvedImdb = imdbId || (traktItem && traktItem.ids && traktItem.ids.imdb) || null;
     const slug         = (traktItem && traktItem.ids && traktItem.ids.slug) || null;
 
-    // OMDb fills posters + plot.
+    // 3. OMDb fills plot (and poster when no TMDB id was pinned).
     let omdbData = resolvedImdb ? await omdbFetch({ imdbId: resolvedImdb }) : null;
     if (!omdbData) omdbData = await omdbFetch({ query, type });
+    if (!posterUrl) posterUrl = omdbData ? omdbData.poster : null;
 
-    // TMDB fallback for the poster only when OMDb came up blank (common for
-    // K-dramas, anime and very recent shows). OMDb's plot stays the source
-    // of the description.
-    let posterUrl = omdbData ? omdbData.poster : null;
-    if (!posterUrl) {
-      if (tmdbId)              posterUrl = await tmdbPosterByTmdbId(tmdbId, type);
-      if (!posterUrl && resolvedImdb) posterUrl = await tmdbPosterByImdb(resolvedImdb);
-      if (!posterUrl)          posterUrl = await tmdbPosterByTitle(query, type);
-    }
+    // 4. Final TMDB poster fallbacks for cards with no pinned id.
+    if (!posterUrl && resolvedImdb) posterUrl = await tmdbPosterByImdb(resolvedImdb);
+    if (!posterUrl)                 posterUrl = await tmdbPosterByTitle(query, type);
 
     // Trakt fills episode tracking for TV.
     let episodes = null;
@@ -1776,16 +1777,21 @@
     }
   }
 
-  const posters = document.querySelectorAll(".poster");
+  // Process cards in parallel batches of 5 — keeps under Trakt's
+  // 1000-req / 5-min limit while letting the page populate much faster.
+  const posters = Array.from(document.querySelectorAll(".poster"));
+  const BATCH = 5;
   let filled = 0, missed = 0;
-  for (const poster of posters) {
-    try {
-      await processCard(poster);
-      if (poster.querySelector("img")) filled++; else missed++;
-    } catch (e) {
-      console.warn("[Watchlist] card failed:", e);
-      missed++;
-    }
+  for (let i = 0; i < posters.length; i += BATCH) {
+    await Promise.all(posters.slice(i, i + BATCH).map(async (poster) => {
+      try {
+        await processCard(poster);
+        if (poster.querySelector("img")) filled++; else missed++;
+      } catch (e) {
+        console.warn("[Watchlist] card failed:", e);
+        missed++;
+      }
+    }));
   }
   if (dirty) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
