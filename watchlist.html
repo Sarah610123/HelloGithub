@@ -6,18 +6,26 @@
 <title>The Watchlist — Vol. I</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
+    /* Paper & ink */
     --paper:        #faf6ee;
     --paper-deep:   #f5f1ea;
     --ink:          #1a1814;
     --muted:        #6b6358;
     --hair:         #d9d1c2;
+
+    /* Accent + poster palette */
     --accent:       #a8472b;
-    --accent-soft:  #c97a55;
-    --sans: "Manrope", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-    --serif: "Fraunces", "Times New Roman", Georgia, serif;
+    --ochre:        #c9904a;
+    --sage:         #7a8b6b;
+    --midnight:     #2b3245;
+    --clay:         #7a3a26;
+
+    /* Type */
+    --sans:    "Manrope", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --display: "Space Grotesk", "Manrope", system-ui, sans-serif;
   }
 
   * { box-sizing: border-box; }
@@ -41,13 +49,13 @@
     inset: 0;
     pointer-events: none;
     z-index: 50;
-    opacity: 0.45;
+    opacity: 0.42;
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
 
   .sheet {
-    max-width: 1180px;
+    max-width: 1240px;
     margin: 0 auto;
     padding: 56px 64px 96px;
     position: relative;
@@ -66,26 +74,23 @@
   .masthead .right {
     font-family: var(--sans);
     font-size: 11px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
-  }
-  .masthead .right { text-align: right; }
-  .masthead h1 {
-    font-family: var(--serif);
-    font-weight: 400;
-    font-size: clamp(44px, 7vw, 88px);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    margin: 0;
-    text-align: center;
-    font-variation-settings: "opsz" 144;
-  }
-  .masthead h1 em {
-    font-style: italic;
-    color: var(--accent);
     font-weight: 500;
   }
+  .masthead .right { text-align: right; }
+
+  .masthead h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(44px, 7.4vw, 92px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    margin: 0;
+    text-align: center;
+  }
+  .masthead h1 .accent { color: var(--accent); }
 
   .subhead {
     display: flex;
@@ -93,250 +98,358 @@
     align-items: baseline;
     padding: 10px 0 0;
     font-size: 11px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
     border-bottom: 1px solid var(--hair);
     padding-bottom: 18px;
+    font-weight: 500;
   }
   .subhead .dot {
     display: inline-block;
-    width: 6px; height: 6px; border-radius: 50%;
+    width: 5px; height: 5px; border-radius: 50%;
     background: var(--accent);
     margin: 0 8px 1px;
     vertical-align: middle;
   }
 
-  /* ---------- EDITORIAL INTRO ---------- */
+  /* ---------- INTRO ---------- */
   .intro {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 48px;
-    padding: 36px 0 28px;
+    padding: 40px 0 32px;
     border-bottom: 1px solid var(--hair);
   }
   .intro .kicker {
     font-size: 10.5px;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .intro h2 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
   }
   .intro .lede {
-    font-family: var(--serif);
+    font-family: var(--sans);
     font-weight: 400;
-    font-size: clamp(20px, 2.2vw, 28px);
-    line-height: 1.28;
-    letter-spacing: -0.005em;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.55;
     margin: 0;
     column-count: 2;
     column-gap: 36px;
+    color: var(--ink);
   }
-  .intro .lede em { color: var(--accent); font-style: italic; }
+  .intro .lede strong { color: var(--accent); font-weight: 600; }
 
-  /* ---------- SECTIONS ---------- */
+  /* ---------- SECTION ---------- */
   section.bloc {
-    padding: 44px 0 8px;
+    padding: 56px 0 24px;
     border-bottom: 1px solid var(--hair);
   }
   section.bloc:last-of-type { border-bottom: none; }
 
   .bloc-head {
     display: grid;
-    grid-template-columns: 56px 1fr auto;
+    grid-template-columns: 64px 1fr auto;
     align-items: end;
-    gap: 20px;
-    margin-bottom: 28px;
+    gap: 22px;
+    margin-bottom: 36px;
   }
   .bloc-num {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 44px;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 42px;
     line-height: 1;
     color: var(--accent);
-    font-weight: 400;
+    letter-spacing: -0.04em;
   }
   .bloc-title {
-    font-family: var(--serif);
-    font-weight: 500;
-    font-size: clamp(28px, 3.4vw, 44px);
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(28px, 3.6vw, 48px);
     line-height: 1;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.035em;
     margin: 0;
   }
   .bloc-meta {
     font-size: 10.5px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
     text-align: right;
     border-left: 1px solid var(--hair);
     padding-left: 20px;
+    font-weight: 500;
   }
 
-  /* ---------- SUBCATEGORY ROWS ---------- */
+  /* ---------- SUBCATEGORY ---------- */
   .subcat {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 36px;
-    padding: 22px 0;
-    border-top: 1px solid var(--hair);
+    padding: 18px 0 36px;
   }
-  .subcat:first-of-type { border-top: none; padding-top: 6px; }
   .subcat-label {
-    font-family: var(--sans);
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--ink);
-    font-weight: 600;
-    padding-top: 6px;
-    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 22px;
   }
   .subcat-label::before {
     content: "";
-    display: block;
-    width: 18px;
+    display: inline-block;
+    width: 22px;
     height: 1px;
     background: var(--accent);
-    margin-bottom: 10px;
+    transform: translateY(-4px);
+  }
+  .subcat-label h3 {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--ink);
   }
   .subcat-label small {
-    display: block;
-    margin-top: 6px;
+    font-family: var(--sans);
+    font-size: 12px;
     color: var(--muted);
     font-weight: 400;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.04em;
+    text-transform: none;
   }
 
-  /* ---------- TITLE ITEMS ---------- */
-  .items {
+  /* ---------- POSTER GRID ---------- */
+  .poster-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 22px 48px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 28px 22px;
   }
-  .item {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 6px 18px;
-    align-items: baseline;
-    padding-bottom: 14px;
-    border-bottom: 1px dotted var(--hair);
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  .item .name {
-    font-family: var(--serif);
-    font-weight: 500;
+
+  /* The poster itself (2:3) */
+  .poster {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 14px;
+    color: var(--paper);
+    background: var(--ink);
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 12px 24px -16px rgba(26, 24, 20, 0.5);
+  }
+
+  /* User-supplied image — drop an <img> inside .poster and it covers everything */
+  .poster > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .poster > img + .poster-body { display: none; }
+
+  .poster-body {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .poster-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: var(--sans);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.78;
+    font-weight: 600;
+  }
+
+  .poster-title {
+    font-family: var(--display);
+    font-weight: 600;
     font-size: 22px;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .poster-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: var(--sans);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.78;
+    font-weight: 600;
+  }
+  .poster-bottom .flag { font-size: 14px; letter-spacing: 0; opacity: 1; }
+
+  /* Decorative rule across the poster */
+  .poster-rule {
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+    margin: 12px 0;
+  }
+
+  /* Color variants — cycle through */
+  .poster.v-ink       { background: var(--ink);       color: var(--paper); }
+  .poster.v-terracotta{ background: var(--accent);    color: var(--paper); }
+  .poster.v-cream     { background: var(--paper-deep);color: var(--ink); }
+  .poster.v-ochre     { background: var(--ochre);     color: var(--ink); }
+  .poster.v-sage      { background: var(--sage);      color: var(--paper); }
+  .poster.v-midnight  { background: var(--midnight);  color: var(--paper); }
+  .poster.v-clay      { background: var(--clay);      color: var(--paper); }
+
+  .poster.v-cream .poster-top,
+  .poster.v-cream .poster-bottom { opacity: 0.62; color: var(--muted); }
+  .poster.v-cream .poster-title  { color: var(--accent); }
+  .poster.v-ochre .poster-top,
+  .poster.v-ochre .poster-bottom { opacity: 0.7; color: #4a3a1f; }
+
+  /* Caption block (below poster) */
+  .caption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--sans);
+  }
+  .caption .c-title {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+    color: var(--ink);
     margin: 0;
   }
-  .item .name em {
-    font-style: italic;
-    color: var(--accent);
-    font-weight: 500;
-  }
-  .item .badges {
-    font-family: var(--sans);
+  .caption .c-meta {
     font-size: 10.5px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--muted);
-    white-space: nowrap;
-    text-align: right;
-  }
-  .item .flag {
-    font-size: 14px;
-    letter-spacing: 0;
-    margin-right: 6px;
-  }
-  .item .meta {
-    grid-column: 1 / -1;
+    font-weight: 500;
     display: flex;
-    gap: 14px;
+    gap: 8px;
     align-items: center;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    color: var(--muted);
+    flex-wrap: wrap;
   }
-  .item .meta .sep {
+  .caption .c-meta .sep {
     width: 3px; height: 3px; border-radius: 50%; background: var(--hair);
-  }
-  .item .note {
-    grid-column: 1 / -1;
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 14px;
-    line-height: 1.4;
-    color: var(--muted);
-    margin: 2px 0 0;
+    flex-shrink: 0;
   }
 
   /* status dots */
   .status {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    font-size: 10.5px;
+    gap: 6px;
+    font-size: 10px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
+    font-weight: 600;
   }
   .status::before {
     content: "";
-    width: 7px; height: 7px; border-radius: 50%;
+    width: 6px; height: 6px; border-radius: 50%;
     display: inline-block;
   }
   .status.completed::before { background: var(--ink); }
-  .status.airing::before    { background: transparent; border: 1.5px solid var(--ink); }
-  .status.verify::before    { background: transparent; border: 1.5px dashed var(--accent); }
+  .status.airing::before    { background: transparent; border: 1.4px solid var(--ink); }
+  .status.verify::before    { background: transparent; border: 1.4px dashed var(--accent); }
   .status.completed { color: var(--ink); }
   .status.airing    { color: var(--ink); }
   .status.verify    { color: var(--accent); }
 
-  /* ---------- HIGHLIGHT BLOCK (single accent) ---------- */
+  /* ---------- HIGHLIGHT BLOCK ---------- */
   .highlight {
     background: var(--accent);
     color: var(--paper);
-    padding: 28px 32px;
+    padding: 32px 36px;
     margin: 36px 0 0;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 160px 1fr auto;
     gap: 28px;
     align-items: center;
   }
   .highlight .h-kicker {
     font-family: var(--sans);
     font-size: 10.5px;
-    letter-spacing: 0.24em;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
     opacity: 0.78;
+    font-weight: 600;
   }
   .highlight .h-title {
-    font-family: var(--serif);
-    font-style: italic;
-    font-weight: 400;
+    font-family: var(--display);
+    font-weight: 500;
     font-size: clamp(22px, 2.6vw, 32px);
-    line-height: 1.15;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
     margin: 0;
   }
   .highlight .h-meta {
     font-family: var(--sans);
     font-size: 10.5px;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0.85;
     text-align: right;
+    font-weight: 500;
+  }
+  .highlight .h-poster {
+    aspect-ratio: 2/3;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .highlight .h-poster .pt {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: -0.03em;
   }
 
   /* ---------- ORNAMENT ---------- */
   .ornament {
     text-align: center;
     color: var(--accent);
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 22px;
-    letter-spacing: 0.4em;
-    margin: 36px 0 0;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.6em;
+    margin: 44px 0 0;
     user-select: none;
   }
 
@@ -345,13 +458,14 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 28px;
-    margin-top: 56px;
+    margin-top: 64px;
     padding-top: 22px;
     border-top: 1px solid var(--ink);
     font-size: 10.5px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--muted);
+    font-weight: 500;
   }
   footer.colophon .center { text-align: center; }
   footer.colophon .right  { text-align: right; }
@@ -363,29 +477,35 @@
   }
 
   /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px) {
+    .poster-grid { grid-template-columns: repeat(4, 1fr); }
+  }
   @media (max-width: 900px) {
-    .sheet { padding: 32px 24px 64px; }
-    .intro { grid-template-columns: 1fr; gap: 20px; }
+    .sheet { padding: 32px 28px 64px; }
+    .intro { grid-template-columns: 1fr; gap: 22px; }
     .intro .lede { column-count: 1; }
-    .subcat { grid-template-columns: 1fr; gap: 16px; }
-    .items { grid-template-columns: 1fr; gap: 18px; }
-    .bloc-head { grid-template-columns: 40px 1fr; }
+    .poster-grid { grid-template-columns: repeat(3, 1fr); gap: 22px 18px; }
+    .bloc-head { grid-template-columns: 44px 1fr; }
     .bloc-meta { display: none; }
-    .highlight { grid-template-columns: 1fr; gap: 12px; }
-    .highlight .h-meta { text-align: left; }
+    .highlight { grid-template-columns: 120px 1fr; }
+    .highlight .h-meta { grid-column: 1 / -1; text-align: left; }
   }
   @media (max-width: 600px) {
     .masthead { grid-template-columns: 1fr; text-align: center; }
     .masthead .left, .masthead .right { text-align: center; }
-    .item { grid-template-columns: 1fr; }
-    .item .badges { text-align: left; }
+    .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
+    .poster-title { font-size: 17px; }
+    .caption { gap: 3px; }
     footer.colophon { grid-template-columns: 1fr; gap: 14px; text-align: center; }
     footer.colophon .right, footer.colophon .center { text-align: center; }
+    .highlight { grid-template-columns: 1fr; gap: 16px; padding: 24px; }
+    .highlight .h-poster { max-width: 160px; }
   }
 
   @media print {
     body::before { display: none; }
     .sheet { padding: 24px; }
+    .poster { box-shadow: none; border: 1px solid var(--hair); }
   }
 </style>
 </head>
@@ -395,7 +515,7 @@
   <!-- ========== MASTHEAD ========== -->
   <header class="masthead">
     <div class="left">Vol. I &nbsp;·&nbsp; No. 01</div>
-    <h1>The <em>Watchlist</em></h1>
+    <h1>The <span class="accent">Watchlist</span></h1>
     <div class="right">A Considered Index</div>
   </header>
 
@@ -409,93 +529,121 @@
   <section class="intro">
     <div>
       <div class="kicker">From the Editor</div>
-      <div style="font-family: var(--serif); font-size: 26px; line-height: 1.05; letter-spacing: -0.02em;">
-        Five shelves.<br/>
-        One quiet evening<br/>
-        at a time.
-      </div>
+      <h2>Five shelves.<br/>One quiet evening<br/>at a time.</h2>
     </div>
     <p class="lede">
-      A standing index of the series, films and animation worth returning to — sorted by language, mood and length of attention required. Treat it as a <em>library, not a queue</em>: pull what suits the hour, leave the rest on the shelf. Italics mark current obsessions; dashed dots mark titles still waiting for verification.
+      A standing index of the series, films and animation worth returning to — sorted by language, mood and length of attention required. Treat it as a <strong>library, not a queue</strong>: pull what suits the hour, leave the rest on the shelf. Dashed dots mark titles still waiting for verification.
     </p>
   </section>
 
   <!-- ========== I. KOREAN ========== -->
   <section class="bloc">
     <div class="bloc-head">
-      <div class="bloc-num">i.</div>
+      <div class="bloc-num">01</div>
       <h2 class="bloc-title">Korean Dramas</h2>
       <div class="bloc-meta">17 titles<br/>🇰🇷 Series</div>
     </div>
 
     <!-- Romance -->
     <div class="subcat">
-      <div class="subcat-label">Romance<small>Longing &amp; light</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Romance</h3><small>Longing &amp; light</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>The Wonderfools</em></h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
-            <span class="sep"></span><span>Platform — TBC</span>
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">The Wonderfools</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2024</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Wonderfools</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Eps · TBC</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">My Royal Nemesis</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
-            <span class="sep"></span><span>Historical-leaning</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">My Royal Nemesis</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Sageuk</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">My Royal Nemesis</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Historical-leaning</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">The World of Love</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">The World of Love</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The World of Love</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Sold Out On You</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Sold Out On You</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Sold Out On You</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">To My Beloved Thief</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">To My Beloved Thief</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
           </div>
-          <p class="note">A premise that promises charm and a chase in equal measure.</p>
-        </article>
-
-        <article class="item">
-          <h3 class="name">Can This Love Be Translated?</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status airing">Airing</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+          <div class="caption">
+            <p class="c-title">To My Beloved Thief</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Azure Spring</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Can This Love Be Translated?</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2025</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Can This Love Be Translated?</p>
+            <div class="c-meta"><span class="status airing">Airing</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Azure Spring</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Azure Spring</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -504,34 +652,48 @@
 
     <!-- Comedy / Action -->
     <div class="subcat">
-      <div class="subcat-label">Comedy &amp; Action<small>Sharp turns, soft landings</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Comedy &amp; Action</h3><small>Sharp turns, soft landings</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>Bloodhounds</em></h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status completed">Completed</span>
-            <span class="sep"></span><span>8 eps</span>
-            <span class="sep"></span><span>Netflix</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Action</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Bloodhounds</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>8 eps</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Bloodhounds</p>
+            <div class="c-meta"><span class="status completed">Completed</span><span class="sep"></span><span>Netflix</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Undercover Miss Hong</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Undercover Miss Hong</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Undercover Miss Hong</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">We Are All Trying Here</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status airing">Airing</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>K-Drama</span></div>
+              <h3 class="poster-title">We Are All Trying Here</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2025</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">We Are All Trying Here</p>
+            <div class="c-meta"><span class="status airing">Airing</span></div>
           </div>
         </article>
 
@@ -540,53 +702,77 @@
 
     <!-- Thriller / Mystery -->
     <div class="subcat">
-      <div class="subcat-label">Thriller &amp; Mystery<small>Cold rooms, careful work</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Thriller &amp; Mystery</h3><small>Cold rooms, careful work</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">The Women in the White Car</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Mystery</span><span>K-Drama</span></div>
+              <h3 class="poster-title">The Women in the White Car</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Women in the White Car</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Scarecrow</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Scarecrow</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Scarecrow</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Reverse</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Reverse</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Reverse</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Honour</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Honour</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Honour</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name"><em>Perfect Crown</em></h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Mystery</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Perfect Crown</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
           </div>
-          <p class="note">A title that hints at palace intrigue dressed as procedural.</p>
+          <div class="caption">
+            <p class="c-title">Perfect Crown</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
         </article>
 
       </div>
@@ -594,16 +780,20 @@
 
     <!-- Historical -->
     <div class="subcat">
-      <div class="subcat-label">Historical<small>Ink, silk, ceremony</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Historical</h3><small>Ink, silk, ceremony</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">The Man Who Lives With the King</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
-            <span class="sep"></span><span>Sageuk</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Sageuk</span><span>K-Drama</span></div>
+              <h3 class="poster-title">The Man Who Lives With the King</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Man Who Lives With the King</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -612,16 +802,20 @@
 
     <!-- Sports -->
     <div class="subcat">
-      <div class="subcat-label">Sports<small>The training-montage shelf</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Sports</h3><small>The training-montage shelf</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">Sprint Fever</h3>
-          <div class="badges"><span class="flag">🇰🇷</span>K-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
-            <span class="sep"></span><span>Track &amp; field</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Sports</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Sprint Fever</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Track</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Sprint Fever</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -632,94 +826,127 @@
   <!-- ========== II. JAPANESE ========== -->
   <section class="bloc">
     <div class="bloc-head">
-      <div class="bloc-num">ii.</div>
+      <div class="bloc-num">02</div>
       <h2 class="bloc-title">Japanese</h2>
       <div class="bloc-meta">1 title<br/>🇯🇵 Series</div>
     </div>
 
     <div class="subcat">
-      <div class="subcat-label">Live-Action<small>Outside the anime canon</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Live-Action</h3><small>Outside the anime canon</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>Straight to Hell</em></h3>
-          <div class="badges"><span class="flag">🇯🇵</span>J-Drama</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
-            <span class="sep"></span><span>Platform — TBC</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>J-Drama</span></div>
+              <h3 class="poster-title">Straight to Hell</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
           </div>
-          <p class="note">Filed under: titles that are louder than the show they belong to.</p>
+          <div class="caption">
+            <p class="c-title">Straight to Hell</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
         </article>
 
       </div>
     </div>
   </section>
 
-  <!-- ========== HIGHLIGHT — single accent block ========== -->
+  <!-- ========== HIGHLIGHT ========== -->
   <aside class="highlight">
-    <div class="h-kicker">Now Watching</div>
-    <h3 class="h-title">“Frieren: Beyond Journey's End” — a quiet meditation on what the hero does after the quest.</h3>
+    <div class="h-poster">
+      <div style="font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.78; font-weight: 600;">Anime · 28 eps</div>
+      <div class="pt">Frieren</div>
+      <div style="font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.78; font-weight: 600;">🇯🇵 · Crunchyroll</div>
+    </div>
+    <div>
+      <div class="h-kicker">Now Watching</div>
+      <h3 class="h-title">“Frieren: Beyond Journey's End” — a quiet meditation on what the hero does after the quest.</h3>
+    </div>
     <div class="h-meta">🇯🇵 Anime · 28 eps<br/>Crunchyroll</div>
   </aside>
 
   <!-- ========== III. ENGLISH-LANGUAGE SERIES ========== -->
   <section class="bloc">
     <div class="bloc-head">
-      <div class="bloc-num">iii.</div>
+      <div class="bloc-num">03</div>
       <h2 class="bloc-title">English-Language Series</h2>
       <div class="bloc-meta">18 titles<br/>🇬🇧 🇺🇸 Series</div>
     </div>
 
     <!-- Dark Comedy -->
     <div class="subcat">
-      <div class="subcat-label">Dark Comedy<small>Laughs with a half-life</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Dark Comedy</h3><small>Laughs with a half-life</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">Off Campus</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Dark Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Off Campus</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Off Campus</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Margo's Got Money <span style="color:var(--accent);">Troubles</span></h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status airing">Airing</span>
-            <span class="sep"></span><span>Apple TV+</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Margo's Got Money Troubles</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Apple TV+</span></div>
+            </div>
           </div>
-          <p class="note">Adapted from Rufi Thorpe's novel; single mom, OnlyFans, wrestling dad.</p>
-        </article>
-
-        <article class="item">
-          <h3 class="name"><em>Running Point</em></h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status completed">Completed</span>
-            <span class="sep"></span><span>10 eps</span>
-            <span class="sep"></span><span>Netflix</span>
+          <div class="caption">
+            <p class="c-title">Margo's Got Money Troubles</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>Apple TV+</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">The Christophers</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Running Point</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>10 eps</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Running Point</p>
+            <div class="c-meta"><span class="status completed">Completed</span><span class="sep"></span><span>Netflix</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Maximum Pleasure Guaranteed</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">The Christophers</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Christophers</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Maximum Pleasure Guaranteed</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Maximum Pleasure Guaranteed</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -728,62 +955,90 @@
 
     <!-- Thriller / Horror -->
     <div class="subcat">
-      <div class="subcat-label">Thriller &amp; Horror<small>For the late, locked-door hour</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Thriller &amp; Horror</h3><small>For the late, locked-door hour</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>The Chestnut Man</em></h3>
-          <div class="badges"><span class="flag">🇩🇰</span>Series</div>
-          <div class="meta">
-            <span class="status completed">Completed</span>
-            <span class="sep"></span><span>6 eps</span>
-            <span class="sep"></span><span>Netflix</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">The Chestnut Man</h3>
+              <div class="poster-bottom"><span class="flag">🇩🇰</span><span>6 eps</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Chestnut Man</p>
+            <div class="c-meta"><span class="status completed">Completed</span><span class="sep"></span><span>Netflix</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">The Borough</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">The Borough</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Borough</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">From</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status airing">Airing</span>
-            <span class="sep"></span><span>S4 in production</span>
-            <span class="sep"></span><span>MGM+</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Horror</span><span>Series</span></div>
+              <h3 class="poster-title">From</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>S4 incoming</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">From</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>MGM+</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Nemesis</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">Nemesis</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Nemesis</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Half Man</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">Half Man</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Half Man</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Cold Storage</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Horror</span><span>Series</span></div>
+              <h3 class="poster-title">Cold Storage</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Cold Storage</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -792,79 +1047,118 @@
 
     <!-- Drama -->
     <div class="subcat">
-      <div class="subcat-label">Drama<small>Slow weather, real people</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Drama</h3><small>Slow weather, real people</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">Widow's Bay</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Widow's Bay</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Widow's Bay</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Legends</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Legends</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Legends</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Mother Mary</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Mother Mary</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Mother Mary</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Normal</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Normal</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Normal</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">The Bride</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">The Bride</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Bride</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Unchosen</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Unchosen</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Unchosen</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Gold Land</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Gold Land</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Gold Land</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Dutton Ranch</h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Series</div>
-          <div class="meta">
-            <span class="status airing">Airing</span>
-            <span class="sep"></span><span>Paramount+</span>
-            <span class="sep"></span><span>Yellowstone universe</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Western</span><span>Series</span></div>
+              <h3 class="poster-title">Dutton Ranch</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Paramount+</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Dutton Ranch</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>Yellowstone universe</span></div>
           </div>
         </article>
 
@@ -875,40 +1169,54 @@
   <!-- ========== IV. FILMS ========== -->
   <section class="bloc">
     <div class="bloc-head">
-      <div class="bloc-num">iv.</div>
+      <div class="bloc-num">04</div>
       <h2 class="bloc-title">Films</h2>
       <div class="bloc-meta">3 titles<br/>Cinema</div>
     </div>
 
     <div class="subcat">
-      <div class="subcat-label">Feature-Length<small>One evening, one sitting</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Feature-Length</h3><small>One evening, one sitting</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>Remarkably Bright Creatures</em></h3>
-          <div class="badges"><span class="flag">🇺🇸</span>Film</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Adaptation of Shelby Van Pelt's novel</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Remarkably Bright Creatures</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Adaptation</span></div>
+            </div>
           </div>
-          <p class="note">A widow, a giant Pacific octopus, and an aquarium in the off-season.</p>
-        </article>
-
-        <article class="item">
-          <h3 class="name">Hamlet</h3>
-          <div class="badges"><span class="flag">🇬🇧</span>Film</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Adaptation — TBC</span>
+          <div class="caption">
+            <p class="c-title">Remarkably Bright Creatures</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Shelby Van Pelt</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">The House of Spirits</h3>
-          <div class="badges"><span class="flag">🇨🇱</span>Film</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>From Isabel Allende</span>
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Tragedy</span><span>Film</span></div>
+              <h3 class="poster-title">Hamlet</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Hamlet</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Adaptation — TBC</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Magical Realism</span><span>Film</span></div>
+              <h3 class="poster-title">The House of Spirits</h3>
+              <div class="poster-bottom"><span class="flag">🇨🇱</span><span>Allende</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The House of Spirits</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -916,55 +1224,73 @@
     </div>
   </section>
 
-  <div class="ornament">· · ✦ · ·</div>
+  <div class="ornament">· · · · ·</div>
 
   <!-- ========== V. ANIME ========== -->
   <section class="bloc">
     <div class="bloc-head">
-      <div class="bloc-num">v.</div>
+      <div class="bloc-num">05</div>
       <h2 class="bloc-title">Anime</h2>
       <div class="bloc-meta">9 titles<br/>🇯🇵 Animation</div>
     </div>
 
     <div class="subcat">
-      <div class="subcat-label">Fantasy &amp; World-Building<small>Long arcs, slow magic</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Fantasy &amp; World-Building</h3><small>Long arcs, slow magic</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name"><em>Frieren: Beyond Journey's End</em></h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status completed">Completed S1</span>
-            <span class="sep"></span><span>28 eps</span>
-            <span class="sep"></span><span>Crunchyroll</span>
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime · 28 eps</span></div>
+              <h3 class="poster-title">Frieren: Beyond Journey's End</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Crunchyroll</span></div>
+            </div>
           </div>
-          <p class="note">An elf mage learns, slowly, what it means to outlive her friends.</p>
-        </article>
-
-        <article class="item">
-          <h3 class="name">Witch Hat Atelier</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status airing">Adaptation TBA</span>
-            <span class="sep"></span><span>Manga ongoing</span>
+          <div class="caption">
+            <p class="c-title">Frieren: Beyond Journey's End</p>
+            <div class="c-meta"><span class="status completed">Completed S1</span><span class="sep"></span><span>28 eps</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Nippon Sangoku</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime · TBA</span></div>
+              <h3 class="poster-title">Witch Hat Atelier</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Manga ongoing</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Witch Hat Atelier</p>
+            <div class="c-meta"><span class="status airing">Adaptation TBA</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Demon of the Realm</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Historical</span><span>Anime</span></div>
+              <h3 class="poster-title">Nippon Sangoku</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Nippon Sangoku</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink">
+            <div class="poster-body">
+              <div class="poster-top"><span>Dark Fantasy</span><span>Anime</span></div>
+              <h3 class="poster-title">Demon of the Realm</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Demon of the Realm</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -972,53 +1298,76 @@
     </div>
 
     <div class="subcat">
-      <div class="subcat-label">Drama &amp; Strange Worlds<small>The strange-shaped shelf</small></div>
-      <div class="items">
+      <div class="subcat-label"><h3>Drama &amp; Strange Worlds</h3><small>The strange-shaped shelf</small></div>
+      <div class="poster-grid">
 
-        <article class="item">
-          <h3 class="name">Classroom of the Elite</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status airing">S3 — recent</span>
-            <span class="sep"></span><span>Crunchyroll</span>
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Anime</span></div>
+              <h3 class="poster-title">Classroom of the Elite</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>S3</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Classroom of the Elite</p>
+            <div class="c-meta"><span class="status airing">S3 — recent</span><span class="sep"></span><span>Crunchyroll</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name"><em>Re:Zero — Starting Life in Another World</em></h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status airing">S3 — airing</span>
-            <span class="sep"></span><span>Crunchyroll</span>
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Isekai</span><span>Anime</span></div>
+              <h3 class="poster-title">Re:Zero — Starting Life in Another World</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>S3</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Re:Zero</p>
+            <div class="c-meta"><span class="status airing">S3 — airing</span><span class="sep"></span><span>Crunchyroll</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">Dorohedoro</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status completed">Completed S1</span>
-            <span class="sep"></span><span>12 eps</span>
-            <span class="sep"></span><span>Netflix</span>
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Surreal</span><span>Anime · 12 eps</span></div>
+              <h3 class="poster-title">Dorohedoro</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Netflix</span></div>
+            </div>
           </div>
-          <p class="note">Sorcery, lizard heads, gyoza nights — formally itself.</p>
-        </article>
-
-        <article class="item">
-          <h3 class="name">Agents of the Four Seasons</h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+          <div class="caption">
+            <p class="c-title">Dorohedoro</p>
+            <div class="c-meta"><span class="status completed">Completed S1</span><span class="sep"></span><span>12 eps</span></div>
           </div>
         </article>
 
-        <article class="item">
-          <h3 class="name">An Observation Log of My Fiancée<br/><span style="color:var(--muted); font-style: italic; font-size: 17px;">Who Calls Herself a Villainess</span></h3>
-          <div class="badges"><span class="flag">🇯🇵</span>Anime</div>
-          <div class="meta">
-            <span class="status verify">To verify</span>
-            <span class="sep"></span><span>Eps — TBC</span>
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime</span></div>
+              <h3 class="poster-title">Agents of the Four Seasons</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Agents of the Four Seasons</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>Anime</span></div>
+              <h3 class="poster-title">An Observation Log of My Fiancée</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Who Calls Herself a Villainess</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">An Observation Log of My Fiancée Who Calls Herself a Villainess</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
           </div>
         </article>
 
@@ -1029,7 +1378,7 @@
   <!-- ========== FOOTER ========== -->
   <footer class="colophon">
     <div class="left">
-      Set in Fraunces &amp; Manrope<br/>
+      Set in Space Grotesk &amp; Manrope<br/>
       Printed on warm cream
     </div>
     <div class="center">
