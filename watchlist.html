@@ -266,8 +266,8 @@
       0 12px 24px -16px rgba(26, 24, 20, 0.5);
   }
 
-  /* Completed checkmark — appears on any card whose poster has data-status="completed" */
-  .poster[data-status="completed"]::after {
+  /* Watched checkmark — appears on any card whose poster has data-watched="true" */
+  .poster[data-watched="true"]::after {
     content: "";
     position: absolute;
     top: 10px;
@@ -1188,7 +1188,7 @@
         </article>
 
         <article class="card">
-          <div class="poster v-sage" data-status="completed">
+          <div class="poster v-sage" data-status="completed" data-watched="true">
             <div class="poster-body">
               <div class="poster-top"><span>Drama</span><span>Film</span></div>
               <h3 class="poster-title">Remarkably Bright Creatures</h3>
