@@ -1396,13 +1396,14 @@
 (async function watchlist() {
   const OMDB_API_KEY      = "895ae429";
   const TRAKT_CLIENT_ID   = "dd4135814638a322f4974bcfb2fb859758121f895bc6935e61a057bce953c7cc";
+  const TMDB_API_KEY      = "1b9abe1cd56510fa5dbc2c0e922e6b09"; // poster-only fallback when OMDb is blank
 
   if (!OMDB_API_KEY && !TRAKT_CLIENT_ID) {
     console.info("[Watchlist] No API keys configured — placeholder cards remain.");
     return;
   }
 
-  const CACHE_KEY = "watchlist-omdb-trakt-v1";
+  const CACHE_KEY = "watchlist-omdb-trakt-v2"; // bumped after adding TMDB poster fallback
   const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
@@ -1574,6 +1575,58 @@
     return s ? s.episode_count : null;
   }
 
+  // ---------- TMDB (poster fallback only) ----------
+  const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w500";
+
+  async function tmdbPosterByTmdbId(tmdbId, type) {
+    if (!TMDB_API_KEY) return null;
+    const tmdbType = (type === "movie") ? "movie" : "tv";
+    const key = `tmdbp::${tmdbType}::${tmdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_API_KEY}`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const url = data.poster_path ? `${TMDB_IMG_BASE}${data.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB id poster fallback failed:", tmdbId, e); return null; }
+  }
+
+  async function tmdbPosterByImdb(imdbId) {
+    if (!TMDB_API_KEY) return null;
+    const key = `tmdbp::imdb::${imdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API_KEY}&external_source=imdb_id`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const hit = (data.tv_results && data.tv_results[0]) || (data.movie_results && data.movie_results[0]) || null;
+      const url = (hit && hit.poster_path) ? `${TMDB_IMG_BASE}${hit.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB imdb poster fallback failed:", imdbId, e); return null; }
+  }
+
+  async function tmdbPosterByTitle(query, type) {
+    if (!TMDB_API_KEY) return null;
+    const tmdbType = (type === "movie") ? "movie" : "tv";
+    const key = `tmdbp::q::${tmdbType}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const hit = (data.results || []).find(r => r.poster_path);
+      const url = hit ? `${TMDB_IMG_BASE}${hit.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB title poster fallback failed:", query, e); return null; }
+  }
+
   // ---------- formatters ----------
   function formatOverride(o) {
     if (!o) return null;
@@ -1644,6 +1697,16 @@
     let omdbData = resolvedImdb ? await omdbFetch({ imdbId: resolvedImdb }) : null;
     if (!omdbData) omdbData = await omdbFetch({ query, type });
 
+    // TMDB fallback for the poster only when OMDb came up blank (common for
+    // K-dramas, anime and very recent shows). OMDb's plot stays the source
+    // of the description.
+    let posterUrl = omdbData ? omdbData.poster : null;
+    if (!posterUrl) {
+      if (tmdbId)              posterUrl = await tmdbPosterByTmdbId(tmdbId, type);
+      if (!posterUrl && resolvedImdb) posterUrl = await tmdbPosterByImdb(resolvedImdb);
+      if (!posterUrl)          posterUrl = await tmdbPosterByTitle(query, type);
+    }
+
     // Trakt fills episode tracking for TV.
     let episodes = null;
     if (isTV && slug) {
@@ -1656,7 +1719,7 @@
 
     applyToCard(poster, {
       type: isTV ? "tv" : (type || "movie"),
-      poster: omdbData ? omdbData.poster : null,
+      poster: posterUrl,
       plot: omdbData ? omdbData.plot : "",
       year: omdbData ? omdbData.year : "",
       runtime: omdbData ? omdbData.runtime : "",
