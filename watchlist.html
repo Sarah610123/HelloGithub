@@ -1355,7 +1355,7 @@
   <footer class="colophon">
     <div class="left">
       Set in Space Grotesk &amp; Manrope<br/>
-      Posters via <a href="https://www.themoviedb.org/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">TMDB</a>
+      Posters via <a href="https://www.omdbapi.com/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">OMDb</a> · Tracking via <a href="https://trakt.tv/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">Trakt</a>
     </div>
     <div class="center">
       <div class="legend">
@@ -1371,38 +1371,52 @@
   </footer>
 
   <p style="text-align: center; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 18px 0 0; opacity: 0.7;">
-    This product uses the TMDB API but is not endorsed or certified by TMDB.
+    Data provided by OMDb and Trakt — neither endorses or certifies this list.
   </p>
 
 </main>
 
 <!--
   ╭──────────────────────────────────────────────────────────────╮
-  │  TMDB POSTER LOOKUP                                          │
-  │  Free for personal use. Key from themoviedb.org.             │
+  │  OMDb (posters + plot) + TRAKT (aired & next episode)        │
   │                                                              │
   │  Per-poster overrides:                                       │
-  │   data-poster-search="<better query>"                        │
-  │   data-poster-id="12345"          (TMDB numeric id)          │
-  │   data-poster-type="tv" | "series" | "movie"                 │
+  │   data-imdb-id="tt1234567"  — IMDb id (best for both APIs)   │
+  │   data-poster-id="12345"    — TMDB id (Trakt cross-refs it)  │
+  │   data-poster-search="…"    — better search query            │
+  │   data-poster-type="series" | "tv" | "movie"                 │
+  │                                                              │
+  │  Manual status / ep counts (always win over API data):       │
+  │   data-status="airing|completed|upcoming"                    │
+  │   data-eps-aired="N"  data-eps-total="N"                     │
+  │   data-next-air="YYYY-MM-DD"                                 │
   ╰──────────────────────────────────────────────────────────────╯
 -->
 <script>
-(async function tmdbPosters() {
-  const TMDB_API_KEY = "1b9abe1cd56510fa5dbc2c0e922e6b09";
+(async function watchlist() {
+  const OMDB_API_KEY      = "895ae429";
+  const TRAKT_CLIENT_ID   = "dd4135814638a322f4974bcfb2fb859758121f895bc6935e61a057bce953c7cc";
 
-  if (!TMDB_API_KEY) {
-    console.info("[Watchlist] TMDB key not set — keeping stylized placeholder cards.");
+  if (!OMDB_API_KEY && !TRAKT_CLIENT_ID) {
+    console.info("[Watchlist] No API keys configured — placeholder cards remain.");
     return;
   }
 
-  const IMG_BASE = "https://image.tmdb.org/t/p/w500";
-  const CACHE_KEY = "tmdb-details-cache-v4";
-  const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h — picks up newly-aired eps
+  const CACHE_KEY = "watchlist-omdb-trakt-v1";
+  const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
   let cache = {};
   try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
-  let cacheDirty = false;
+  let dirty = false;
 
+  const cget = (k) => {
+    const e = cache[k];
+    if (!e || !e.ts) return undefined;
+    if (Date.now() - e.ts > CACHE_TTL_MS) return undefined;
+    return e.value;
+  };
+  const cset = (k, v) => { cache[k] = { ts: Date.now(), value: v }; dirty = true; };
+
+  // ---------- helpers ----------
   function inheritType(el) {
     let cur = el;
     while (cur && cur !== document.body) {
@@ -1411,84 +1425,24 @@
     }
     return null;
   }
+  const normalizeType = (t) => (t === "series" ? "tv" : (t || null));
 
-  // Accept "series" (provider-neutral) as alias for TMDB's "tv"
-  function tmdbType(t) {
-    if (!t) return null;
-    if (t === "series") return "tv";
-    return t;
+  function formatDate(iso) {
+    const m = (iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return iso;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
   }
-
-  // First sentence if short, otherwise truncate at word boundary.
-  function shortDescription(text, maxChars) {
+  function shortDescription(text, max) {
     if (!text) return "";
     const t = text.trim();
-    const m = t.match(/^[^.!?]+[.!?]/);
-    if (m && m[0].length <= maxChars) return m[0].trim();
-    if (t.length <= maxChars) return t;
-    const cut = t.slice(0, maxChars);
+    const sent = t.match(/^[^.!?]+[.!?]/);
+    if (sent && sent[0].length <= max) return sent[0].trim();
+    if (t.length <= max) return t;
+    const cut = t.slice(0, max);
     const sp = cut.lastIndexOf(" ");
-    return cut.slice(0, sp > 0 ? sp : maxChars).trim() + "…";
+    return cut.slice(0, sp > 0 ? sp : max).trim() + "…";
   }
-
-  async function tmdbGet(path) {
-    const url = `https://api.themoviedb.org/3${path}${path.includes("?") ? "&" : "?"}api_key=${TMDB_API_KEY}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.json();
-  }
-
-  // Resolve a poster card to a TMDB id + type via search, when no id is pinned.
-  async function resolveByTitle(query, type) {
-    const key = `s::${type || "multi"}::${query}`;
-    if (key in cache) return cache[key];
-    try {
-      const endpoint = type ? `/search/${type}` : "/search/multi";
-      const data = await tmdbGet(`${endpoint}?query=${encodeURIComponent(query)}&include_adult=false`);
-      const hit = (data.results || []).find(r => r.poster_path);
-      cache[key] = hit ? { id: hit.id, type: hit.media_type || type } : null;
-      cacheDirty = true;
-      return cache[key];
-    } catch (e) {
-      console.warn("[Watchlist] TMDB search failed:", query, e);
-      return null;
-    }
-  }
-
-  async function fetchDetails(id, type) {
-    const key = `d::${type}::${id}`;
-    const entry = cache[key];
-    if (entry && entry.ts && (Date.now() - entry.ts) < CACHE_TTL_MS) return entry.value;
-    try {
-      const data = await tmdbGet(`/${type}/${id}`);
-      const out = {
-        type,
-        poster_path: data.poster_path || null,
-        overview: data.overview || "",
-      };
-      if (type === "tv") {
-        out.status = data.status || "";
-        out.last_episode = data.last_episode_to_air || null;   // {episode_number, season_number, air_date, ...}
-        out.next_episode = data.next_episode_to_air || null;
-        out.seasons = (data.seasons || []).map(s => ({
-          season_number: s.season_number,
-          episode_count: s.episode_count,
-        }));
-        out.total_episodes = data.number_of_episodes || 0;
-      } else if (type === "movie") {
-        out.runtime = data.runtime || 0;
-        out.release_date = data.release_date || "";
-        out.status = data.status || "";
-      }
-      cache[key] = { ts: Date.now(), value: out };
-      cacheDirty = true;
-      return out;
-    } catch (e) {
-      console.warn("[Watchlist] TMDB details fetch failed:", type, id, e);
-      return null;
-    }
-  }
-
   function readOverride(poster) {
     const st = poster.dataset.status;
     const aired = poster.dataset.epsAired;
@@ -1503,95 +1457,221 @@
     };
   }
 
-  function formatDate(iso) {
-    const m = (iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!m) return iso;
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
+  // ---------- OMDb ----------
+  const upscale = (u) => (!u || u === "N/A") ? null : u.replace(/_SX\d+(\.[a-z]+)$/i, "_SX600$1");
+
+  async function omdbCall(params) {
+    const qs = new URLSearchParams({ apikey: OMDB_API_KEY, ...params });
+    const res = await fetch(`https://www.omdbapi.com/?${qs}`);
+    if (!res.ok) throw new Error(`OMDb ${res.status}`);
+    const j = await res.json();
+    if (j.Response === "False") return null;
+    return {
+      imdbId: j.imdbID || null,
+      poster: upscale(j.Poster),
+      plot: (j.Plot && j.Plot !== "N/A") ? j.Plot : "",
+      year: (j.Year && j.Year !== "N/A") ? j.Year : "",
+      runtime: (j.Runtime && j.Runtime !== "N/A") ? j.Runtime : "",
+    };
+  }
+  async function omdbFetch({ imdbId, query, type }) {
+    if (!OMDB_API_KEY) return null;
+    const key = imdbId ? `omdb::id::${imdbId}` : `omdb::t::${type || "any"}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const params = imdbId ? { i: imdbId } : { t: query };
+      if (!imdbId && type) params.type = (type === "tv") ? "series" : type;
+      const data = await omdbCall(params);
+      cset(key, data);
+      return data;
+    } catch (e) {
+      console.warn("[Watchlist] OMDb error:", { imdbId, query }, e);
+      return null;
+    }
   }
 
+  // ---------- Trakt ----------
+  async function traktCall(path) {
+    const res = await fetch(`https://api.trakt.tv${path}`, {
+      headers: {
+        "trakt-api-version": "2",
+        "trakt-api-key": TRAKT_CLIENT_ID,
+      },
+    });
+    if (!res.ok) throw new Error(`Trakt ${res.status}`);
+    return res.json();
+  }
+  async function traktByImdb(imdbId) {
+    const key = `trakt::imdb::${imdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/imdb/${imdbId}`);
+      const hit = (data || []).find(r => r.show || r.movie);
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt IMDb lookup failed:", imdbId, e); return null; }
+  }
+  async function traktByTmdb(tmdbId, type) {
+    const traktType = (type === "movie") ? "movie" : "show";
+    const key = `trakt::tmdb::${traktType}::${tmdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/tmdb/${tmdbId}?type=${traktType}`);
+      const hit = (data || [])[0];
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt TMDB lookup failed:", tmdbId, e); return null; }
+  }
+  async function traktByTitle(query, type) {
+    const traktType = (type === "movie") ? "movie" : "show";
+    const key = `trakt::q::${traktType}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/${traktType}?query=${encodeURIComponent(query)}`);
+      const hit = (data || [])[0];
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt title search failed:", query, e); return null; }
+  }
+  async function traktEpisodes(slug) {
+    const key = `trakt::eps::${slug}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const [info, lastEp, nextEp] = await Promise.all([
+        traktCall(`/shows/${slug}?extended=full`).catch(() => null),
+        traktCall(`/shows/${slug}/last_episode?extended=full`).catch(() => null),
+        traktCall(`/shows/${slug}/next_episode?extended=full`).catch(() => null),
+      ]);
+      const out = {
+        status: info ? info.status : "",
+        aired_episodes: info ? info.aired_episodes : 0,
+        last_episode: lastEp ? { season: lastEp.season, episode: lastEp.number, air_date: lastEp.first_aired } : null,
+        next_episode: nextEp ? { season: nextEp.season, episode: nextEp.number, air_date: nextEp.first_aired } : null,
+      };
+      cset(key, out);
+      return out;
+    } catch (e) { console.warn("[Watchlist] Trakt eps failed:", slug, e); return null; }
+  }
+  async function traktSeasonTotal(slug, seasonNumber) {
+    const key = `trakt::seasons::${slug}`;
+    let seasons = cget(key);
+    if (seasons === undefined) {
+      try {
+        seasons = await traktCall(`/shows/${slug}/seasons`);
+        cset(key, seasons);
+      } catch (e) { cset(key, null); seasons = null; }
+    }
+    if (!seasons) return null;
+    const s = seasons.find(x => x.number === seasonNumber);
+    return s ? s.episode_count : null;
+  }
+
+  // ---------- formatters ----------
   function formatOverride(o) {
     if (!o) return null;
-    if (o.status === "completed") {
-      return { cls: "completed", label: "Completed", detail: o.total ? `${o.total} eps` : "" };
-    }
+    if (o.status === "completed") return { cls: "completed", label: "Completed", detail: o.total ? `${o.total} eps` : "" };
     if (o.status === "airing" || o.aired != null) {
       let detail = "";
       if (o.aired != null && o.total != null) detail = `${o.aired} of ${o.total} eps`;
       else if (o.aired != null) detail = `${o.aired} eps so far`;
       return { cls: "airing", label: "Airing", detail };
     }
-    if (o.status === "upcoming") {
-      return { cls: "verify", label: "Upcoming", detail: o.nextAir ? formatDate(o.nextAir) : "" };
-    }
+    if (o.status === "upcoming") return { cls: "verify", label: "Upcoming", detail: o.nextAir ? formatDate(o.nextAir) : "" };
     return null;
   }
-
   function formatStatus(d) {
     if (!d) return null;
     if (d.type === "tv") {
-      const ended = d.status === "Ended" || d.status === "Canceled";
-      const last = d.last_episode;
-      const next = d.next_episode;
-
-      // Per-current-season counts, derived from last_episode_to_air.
+      const ended = d.status === "ended" || d.status === "canceled";
+      const last = d.last_episode, next = d.next_episode;
       let aired = null, total = null, season = null;
       if (last) {
-        aired = last.episode_number;
-        season = last.season_number;
-        const s = (d.seasons || []).find(x => x.season_number === season);
-        if (s) total = s.episode_count;
+        aired = last.episode;
+        season = last.season;
+        total = d.season_total != null ? d.season_total : null;
       }
+      const suffix = (season && season > 1) ? ` · S${season}` : "";
 
-      const seasonSuffix = (season && season > 1) ? ` · S${season}` : "";
-
-      // Completely finished: no future episode, status ended/canceled.
       if (ended && !next) {
-        if (aired != null && total != null) {
-          return { cls: "completed", label: "Completed", detail: `${total} eps${seasonSuffix}` };
-        }
-        return { cls: "completed", label: "Completed", detail: d.total_episodes ? `${d.total_episodes} eps` : "" };
+        if (aired != null && total != null) return { cls: "completed", label: "Completed", detail: `${total} eps${suffix}` };
+        return { cls: "completed", label: "Completed", detail: d.aired_episodes ? `${d.aired_episodes} eps` : "" };
       }
-
-      // Current season fully aired, next season is scheduled.
-      if (aired != null && total != null && aired >= total && next && next.season_number > season) {
+      if (aired != null && total != null && aired >= total && next && next.season > season) {
         return { cls: "completed", label: `S${season} complete`, detail: `${total} eps` };
       }
-
-      // Still airing this season.
-      if (aired != null && total != null) {
-        return { cls: "airing", label: "Airing", detail: `${aired} of ${total} eps${seasonSuffix}` };
-      }
-      if (aired != null) {
-        return { cls: "airing", label: "Airing", detail: `${aired} eps so far${seasonSuffix}` };
-      }
-      if (d.total_episodes > 0) {
-        return { cls: "airing", label: "Airing", detail: `${d.total_episodes} eps so far` };
-      }
+      if (aired != null && total != null) return { cls: "airing", label: "Airing", detail: `${aired} of ${total} eps${suffix}` };
+      if (aired != null) return { cls: "airing", label: "Airing", detail: `${aired} eps so far${suffix}` };
+      if (d.aired_episodes > 0) return { cls: "airing", label: "Airing", detail: `${d.aired_episodes} eps so far` };
       return { cls: "verify", label: "Upcoming", detail: "" };
     }
     if (d.type === "movie") {
-      if (d.status === "Released") {
-        const yr = (d.release_date || "").slice(0, 4);
-        const rt = d.runtime ? `${d.runtime} min` : "";
-        const detail = [yr, rt].filter(Boolean).join(" · ");
-        return { cls: "completed", label: "Released", detail };
-      }
-      return { cls: "verify", label: "Upcoming", detail: d.release_date || "" };
+      const parts = [d.year, d.runtime].filter(Boolean);
+      return { cls: "completed", label: "Released", detail: parts.join(" · ") };
     }
     return null;
   }
 
-  function applyToCard(poster, details) {
-    if (!details) return;
+  // ---------- per-card pipeline ----------
+  async function processCard(poster) {
     const titleEl = poster.querySelector(".poster-title");
-    const titleText = titleEl ? titleEl.textContent.trim() : "";
+    if (!titleEl) return;
+    const title = titleEl.textContent.trim();
 
-    // Inject poster image if none present.
-    if (details.poster_path && !poster.querySelector("img")) {
+    const imdbId = poster.dataset.imdbId || null;
+    const tmdbId = poster.dataset.posterId || null;
+    const type = normalizeType(poster.dataset.posterType || inheritType(poster));
+    const query = poster.dataset.posterSearch || title;
+    const isTV = (type === "tv");
+
+    // Resolve via Trakt to discover slug + IMDb id (when not pinned).
+    let traktItem = null;
+    if (imdbId)       traktItem = await traktByImdb(imdbId);
+    else if (tmdbId)  traktItem = await traktByTmdb(tmdbId, type);
+    else              traktItem = await traktByTitle(query, type);
+
+    const resolvedImdb = imdbId || (traktItem && traktItem.ids && traktItem.ids.imdb) || null;
+    const slug         = (traktItem && traktItem.ids && traktItem.ids.slug) || null;
+
+    // OMDb fills posters + plot.
+    let omdbData = resolvedImdb ? await omdbFetch({ imdbId: resolvedImdb }) : null;
+    if (!omdbData) omdbData = await omdbFetch({ query, type });
+
+    // Trakt fills episode tracking for TV.
+    let episodes = null;
+    if (isTV && slug) {
+      episodes = await traktEpisodes(slug);
+      if (episodes && episodes.last_episode) {
+        const st = await traktSeasonTotal(slug, episodes.last_episode.season);
+        if (st != null) episodes.season_total = st;
+      }
+    }
+
+    applyToCard(poster, {
+      type: isTV ? "tv" : (type || "movie"),
+      poster: omdbData ? omdbData.poster : null,
+      plot: omdbData ? omdbData.plot : "",
+      year: omdbData ? omdbData.year : "",
+      runtime: omdbData ? omdbData.runtime : "",
+      ...(episodes || {}),
+    });
+  }
+
+  function applyToCard(poster, d) {
+    const titleEl = poster.querySelector(".poster-title");
+    const title = titleEl ? titleEl.textContent.trim() : "";
+
+    if (d.poster && !poster.querySelector("img")) {
       const img = new Image();
-      img.src = `${IMG_BASE}${details.poster_path}`;
-      img.alt = titleText;
+      img.src = d.poster;
+      img.alt = title;
       img.loading = "lazy";
       img.decoding = "async";
       poster.insertBefore(img, poster.firstChild);
@@ -1602,79 +1682,54 @@
     const caption = card.querySelector(".caption");
     if (!caption) return;
 
-    // Refresh status + episode count. Manual overrides on the poster div
-    // take precedence over TMDB-derived numbers.
     const meta = caption.querySelector(".c-meta");
     const override = readOverride(poster);
-    const s = formatOverride(override) || formatStatus(details);
+    const s = formatOverride(override) || formatStatus(d);
     if (meta && s) {
       const status = document.createElement("span");
       status.className = `status ${s.cls}`;
       status.textContent = s.label;
       meta.replaceChildren(status);
       if (s.detail) {
-        const sep = document.createElement("span");
-        sep.className = "sep";
-        const det = document.createElement("span");
-        det.textContent = s.detail;
+        const sep = document.createElement("span"); sep.className = "sep";
+        const det = document.createElement("span"); det.textContent = s.detail;
         meta.append(sep, det);
       }
-      // Show the next-air date whenever there's a known upcoming episode.
-      // TMDB returns null for next_episode_to_air on truly ended shows, so
-      // this naturally skips Completed series and movies.
       const nextAirIso = (override && override.nextAir)
-        || (details.next_episode && details.next_episode.air_date)
+        || (d.next_episode && d.next_episode.air_date)
         || null;
       if (nextAirIso) {
-        const sep = document.createElement("span");
-        sep.className = "sep";
-        const next = document.createElement("span");
-        next.textContent = `Next: ${formatDate(nextAirIso)}`;
+        const sep = document.createElement("span"); sep.className = "sep";
+        const next = document.createElement("span"); next.textContent = `Next: ${formatDate(nextAirIso)}`;
         meta.append(sep, next);
       }
     }
 
-    // Append the overview (skip if already present in markup).
-    if (details.overview && !caption.querySelector(".c-overview")) {
+    if (d.plot && !caption.querySelector(".c-overview")) {
       const p = document.createElement("p");
       p.className = "c-overview";
-      p.textContent = shortDescription(details.overview, 180);
+      p.textContent = shortDescription(d.plot, 180);
       caption.appendChild(p);
     }
   }
 
   const posters = document.querySelectorAll(".poster");
   let filled = 0, missed = 0;
-
   for (const poster of posters) {
-    const titleEl = poster.querySelector(".poster-title");
-    if (!titleEl) continue;
-
-    const pinnedId = poster.dataset.posterId;
-    const pinnedType = tmdbType(poster.dataset.posterType || inheritType(poster));
-    const query = poster.dataset.posterSearch || titleEl.textContent.trim();
-
-    let id = pinnedId, type = pinnedType;
-    if (!id) {
-      const resolved = await resolveByTitle(query, type);
-      if (!resolved) { missed++; continue; }
-      id = resolved.id;
-      type = resolved.type;
+    try {
+      await processCard(poster);
+      if (poster.querySelector("img")) filled++; else missed++;
+    } catch (e) {
+      console.warn("[Watchlist] card failed:", e);
+      missed++;
     }
-    if (!type) { missed++; continue; }
-
-    const details = await fetchDetails(id, type);
-    if (!details) { missed++; continue; }
-
-    applyToCard(poster, details);
-    if (details.poster_path) filled++; else missed++;
   }
-
-  if (cacheDirty) {
+  if (dirty) {
     try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
   }
-  console.info(`[Watchlist] TMDB: ${filled} posters filled, ${missed} not found.`);
+  console.info(`[Watchlist] OMDb+Trakt: ${filled} posters filled, ${missed} not found.`);
 })();
 </script>
 </body>
 </html>
+
