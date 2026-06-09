@@ -1,0 +1,1809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Watchlist — Vol. I</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Paper & ink */
+    --paper:        #faf6ee;
+    --paper-deep:   #f5f1ea;
+    --ink:          #1a1814;
+    --muted:        #6b6358;
+    --hair:         #d9d1c2;
+
+    /* Accent + poster palette */
+    --accent:       #a8472b;
+    --ochre:        #c9904a;
+    --sage:         #7a8b6b;
+    --midnight:     #2b3245;
+    --clay:         #7a3a26;
+
+    /* Type */
+    --sans:    "Manrope", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    --display: "Space Grotesk", "Manrope", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Paper grain overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.16 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  .sheet {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 56px 64px 96px;
+    position: relative;
+  }
+
+  /* ---------- MASTHEAD ---------- */
+  .masthead {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .masthead .left,
+  .masthead .right {
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .masthead .right { text-align: right; }
+
+  .masthead h1 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(44px, 7.4vw, 92px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    margin: 0;
+    text-align: center;
+  }
+  .masthead h1 .accent { color: var(--accent); }
+
+  .subhead {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 10px 0 0;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--hair);
+    padding-bottom: 18px;
+    font-weight: 500;
+  }
+  .subhead .dot {
+    display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+    margin: 0 8px 1px;
+    vertical-align: middle;
+  }
+
+  /* ---------- INTRO ---------- */
+  .intro {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 48px;
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .intro .kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .intro h2 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.4vw, 30px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 0;
+  }
+  .intro .lede {
+    font-family: var(--sans);
+    font-weight: 400;
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.55;
+    margin: 0;
+    column-count: 2;
+    column-gap: 36px;
+    color: var(--ink);
+  }
+  .intro .lede strong { color: var(--accent); font-weight: 600; }
+
+  /* ---------- SECTION ---------- */
+  section.bloc {
+    --section-accent: var(--accent);
+    padding: 56px 0 24px;
+    border-bottom: 1px solid var(--hair);
+    position: relative;
+  }
+  section.bloc::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 72px; height: 3px;
+    background: var(--section-accent);
+  }
+  section.bloc.is-films { --section-accent: var(--ochre); }
+  section.bloc.is-anime { --section-accent: #4a6072; }
+  section.bloc:last-of-type { border-bottom: none; }
+
+  .bloc-head {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: end;
+    gap: 22px;
+    margin-bottom: 36px;
+  }
+  .bloc-num {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 42px;
+    line-height: 1;
+    color: var(--section-accent, var(--accent));
+    letter-spacing: -0.04em;
+  }
+  .bloc-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(28px, 3.6vw, 48px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    margin: 0;
+  }
+  .bloc-meta {
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: right;
+    border-left: 1px solid var(--hair);
+    padding-left: 20px;
+    font-weight: 500;
+  }
+
+  /* ---------- SUBCATEGORY ---------- */
+  .subcat {
+    padding: 18px 0 36px;
+  }
+  .subcat-label {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .subcat-label::before {
+    content: "";
+    display: inline-block;
+    width: 22px;
+    height: 1px;
+    background: var(--section-accent, var(--accent));
+    transform: translateY(-4px);
+  }
+  .subcat-label h3 {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin: 0;
+    color: var(--ink);
+  }
+  .subcat-label small {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: none;
+  }
+
+  /* ---------- POSTER GRID ---------- */
+  .poster-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 28px 22px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* The poster itself (2:3) */
+  .poster {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 14px;
+    color: var(--paper);
+    background: var(--ink);
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 12px 24px -16px rgba(26, 24, 20, 0.5);
+  }
+
+  /* Watched checkmark — appears on any card whose poster has data-watched="true" */
+  .poster[data-watched="true"]::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #2d6a4f;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf6ee' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(45, 106, 79, 0.4);
+    pointer-events: none;
+  }
+
+  /* User-supplied image — drop an <img> inside .poster and it covers everything */
+  .poster > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  .poster > img + .poster-body { display: none; }
+
+  .poster-body {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .poster-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-family: var(--sans);
+    font-size: 9.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    opacity: 0.78;
+    font-weight: 600;
+  }
+
+  .poster-title {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  .poster-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    font-family: var(--sans);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.78;
+    font-weight: 600;
+  }
+  .poster-bottom .flag { font-size: 14px; letter-spacing: 0; opacity: 1; }
+
+  /* Decorative rule across the poster */
+  .poster-rule {
+    height: 1px;
+    background: currentColor;
+    opacity: 0.4;
+    margin: 12px 0;
+  }
+
+  /* Color variants — cycle through */
+  .poster.v-ink       { background: var(--ink);       color: var(--paper); }
+  .poster.v-terracotta{ background: var(--accent);    color: var(--paper); }
+  .poster.v-cream     { background: var(--paper-deep);color: var(--ink); }
+  .poster.v-ochre     { background: var(--ochre);     color: var(--ink); }
+  .poster.v-sage      { background: var(--sage);      color: var(--paper); }
+  .poster.v-midnight  { background: var(--midnight);  color: var(--paper); }
+  .poster.v-clay      { background: var(--clay);      color: var(--paper); }
+
+  .poster.v-cream .poster-top,
+  .poster.v-cream .poster-bottom { opacity: 0.62; color: var(--muted); }
+  .poster.v-cream .poster-title  { color: var(--accent); }
+  .poster.v-ochre .poster-top,
+  .poster.v-ochre .poster-bottom { opacity: 0.7; color: #4a3a1f; }
+
+  /* Caption block (below poster) */
+  .caption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-family: var(--sans);
+  }
+  .caption .c-title {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    margin: 0;
+  }
+  .caption .c-meta {
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .caption .c-meta .sep {
+    width: 3px; height: 3px; border-radius: 50%; background: var(--hair);
+    flex-shrink: 0;
+  }
+  .caption .c-overview {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--muted);
+    margin: 4px 0 0;
+    font-weight: 400;
+  }
+
+  /* status dots */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .status::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    display: inline-block;
+  }
+  .status.completed::before { background: #2d6a4f; }
+  .status.airing::before    { background: #c8302a; }
+  .status.verify::before    { background: transparent; border: 1.4px dashed var(--accent); }
+  .status.completed { color: #2d6a4f; font-weight: 700; letter-spacing: 0.18em; }
+  .status.airing    { color: #c8302a; font-weight: 700; letter-spacing: 0.18em; }
+  .status.verify    { color: var(--accent); }
+
+  /* ---------- HIGHLIGHT BLOCK ---------- */
+  .highlight {
+    background: var(--accent);
+    color: var(--paper);
+    padding: 32px 36px;
+    margin: 36px 0 0;
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 28px;
+    align-items: center;
+  }
+  .highlight .h-kicker {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    opacity: 0.78;
+    font-weight: 600;
+  }
+  .highlight .h-title {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(22px, 2.6vw, 32px);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin: 0;
+  }
+  .highlight .h-meta {
+    font-family: var(--sans);
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    text-align: right;
+    font-weight: 500;
+  }
+  .highlight .h-poster {
+    aspect-ratio: 2/3;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .highlight .h-poster .pt {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* ---------- ORNAMENT ---------- */
+  .ornament {
+    text-align: center;
+    color: var(--accent);
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 18px;
+    letter-spacing: 0.6em;
+    margin: 44px 0 0;
+    user-select: none;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer.colophon {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 28px;
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--ink);
+    font-size: 10.5px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  footer.colophon .center { text-align: center; }
+  footer.colophon .right  { text-align: right; }
+  footer .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1100px) {
+    .poster-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media (max-width: 900px) {
+    .sheet { padding: 32px 28px 64px; }
+    .intro { grid-template-columns: 1fr; gap: 22px; }
+    .intro .lede { column-count: 1; }
+    .poster-grid { grid-template-columns: repeat(3, 1fr); gap: 22px 18px; }
+    .bloc-head { grid-template-columns: 44px 1fr; }
+    .bloc-meta { display: none; }
+    .highlight { grid-template-columns: 120px 1fr; }
+    .highlight .h-meta { grid-column: 1 / -1; text-align: left; }
+  }
+  @media (max-width: 600px) {
+    .masthead { grid-template-columns: 1fr; text-align: center; }
+    .masthead .left, .masthead .right { text-align: center; }
+    .poster-grid { grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
+    .poster-title { font-size: 17px; }
+    .caption { gap: 3px; }
+    footer.colophon { grid-template-columns: 1fr; gap: 14px; text-align: center; }
+    footer.colophon .right, footer.colophon .center { text-align: center; }
+    .highlight { grid-template-columns: 1fr; gap: 16px; padding: 24px; }
+    .highlight .h-poster { max-width: 160px; }
+  }
+
+  @media print {
+    body::before { display: none; }
+    .sheet { padding: 24px; }
+    .poster { box-shadow: none; border: 1px solid var(--hair); }
+  }
+</style>
+</head>
+<body>
+<main class="sheet">
+
+  <!-- ========== MASTHEAD ========== -->
+  <header class="masthead">
+    <div class="left">Vol. I &nbsp;·&nbsp; No. 01</div>
+    <h1>The <span class="accent">Watchlist</span></h1>
+    <div class="right">A Considered Index</div>
+  </header>
+
+  <div class="subhead">
+    <span>Curated by S. Albloshi</span>
+    <span>Korea<span class="dot"></span>Japan<span class="dot"></span>English<span class="dot"></span>Anime<span class="dot"></span>Cinema</span>
+    <span>May MMXXVI</span>
+  </div>
+
+  <!-- ========== INTRO ========== -->
+  <section class="intro">
+    <div>
+      <div class="kicker">From the Editor</div>
+      <h2>Five shelves.<br/>One quiet evening<br/>at a time.</h2>
+    </div>
+    <p class="lede">
+      A standing index of the series, films and animation worth returning to — sorted by language, mood and length of attention required. Treat it as a <strong>library, not a queue</strong>: pull what suits the hour, leave the rest on the shelf. Dashed dots mark titles still waiting for verification.
+    </p>
+  </section>
+
+  <!-- ========== I. KOREAN ========== -->
+  <section class="bloc" data-poster-type="series">
+    <div class="bloc-head">
+      <div class="bloc-num">01</div>
+      <h2 class="bloc-title">Korean Dramas</h2>
+      <div class="bloc-meta">14 titles<br/>🇰🇷 Series</div>
+    </div>
+
+    <!-- Romance -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Romance</h3><small>Longing &amp; light</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-cream" data-poster-id="259837" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">The Wonderfools</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2024</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Wonderfools</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Eps · TBC</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta" data-poster-id="303143" data-poster-type="tv" data-status="airing" data-eps-aired="4" data-eps-total="14" data-next-air="2026-05-22">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">My Royal Nemesis</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Sageuk</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">My Royal Nemesis</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Historical-leaning</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="10" data-eps-total="12">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Sold Out On You</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Sold Out On You</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">To My Beloved Thief</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">To My Beloved Thief</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Can This Love Be Translated?</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2025</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Can This Love Be Translated?</p>
+            <div class="c-meta"><span class="status airing">Airing</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-cream">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Azure Spring</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Azure Spring</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Comedy / Action -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Comedy &amp; Action</h3><small>Sharp turns, soft landings</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="127529" data-poster-type="tv" data-status="completed" data-eps-total="8">
+            <div class="poster-body">
+              <div class="poster-top"><span>Action</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Bloodhounds</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>8 eps</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Bloodhounds</p>
+            <div class="c-meta"><span class="status completed">Completed</span><span class="sep"></span><span>Netflix</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Undercover Miss Hong</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Undercover Miss Hong</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="10" data-eps-total="12">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>K-Drama</span></div>
+              <h3 class="poster-title">We Are All Trying Here</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>2025</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">We Are All Trying Here</p>
+            <div class="c-meta"><span class="status airing">Airing</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Thriller / Mystery -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Thriller &amp; Mystery</h3><small>Cold rooms, careful work</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="292121" data-poster-type="tv" data-status="airing" data-eps-aired="10" data-eps-total="12">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Scarecrow</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Scarecrow</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="284000" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Reverse</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Reverse</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-sage" data-poster-id="287346" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Honour</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Honour</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta" data-poster-id="278573" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Mystery</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Perfect Crown</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Perfect Crown</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Sports -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Sports</h3><small>The training-montage shelf</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ochre" data-poster-id="280948" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Sports</span><span>K-Drama</span></div>
+              <h3 class="poster-title">Spring Fever</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Track</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Spring Fever</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== II. JAPANESE ========== -->
+  <section class="bloc" data-poster-type="series">
+    <div class="bloc-head">
+      <div class="bloc-num">02</div>
+      <h2 class="bloc-title">Japanese</h2>
+      <div class="bloc-meta">1 title<br/>🇯🇵 Series</div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>Live-Action</h3><small>Outside the anime canon</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ink" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>J-Drama</span></div>
+              <h3 class="poster-title">Straight to Hell</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Straight to Hell</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== III. ENGLISH-LANGUAGE SERIES ========== -->
+  <section class="bloc" data-poster-type="series">
+    <div class="bloc-head">
+      <div class="bloc-num">03</div>
+      <h2 class="bloc-title">English-Language Series</h2>
+      <div class="bloc-meta">14 titles<br/>🇬🇧 🇺🇸 Series</div>
+    </div>
+
+    <!-- Dark Comedy -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Dark Comedy</h3><small>Laughs with a half-life</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-cream" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Dark Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Off Campus</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Off Campus</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Margo's Got Money Troubles</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Apple TV+</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Margo's Got Money Troubles</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>Apple TV+</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Running Point</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>10 eps</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Running Point</p>
+            <div class="c-meta"><span class="status completed">Completed</span><span class="sep"></span><span>Netflix</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-status="airing" data-eps-aired="2">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Series</span></div>
+              <h3 class="poster-title">Maximum Pleasure Guaranteed</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Maximum Pleasure Guaranteed</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Thriller / Horror -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Thriller &amp; Horror</h3><small>For the late, locked-door hour</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-midnight" data-poster-id="224941" data-poster-type="tv" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">The Boroughs</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Boroughs</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-status="airing" data-eps-aired="5" data-eps-total="10">
+            <div class="poster-body">
+              <div class="poster-top"><span>Horror</span><span>Series · S4</span></div>
+              <h3 class="poster-title">From</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>S4 incoming</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">From</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>MGM+</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">Nemesis</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Nemesis</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-midnight">
+            <div class="poster-body">
+              <div class="poster-top"><span>Thriller</span><span>Series</span></div>
+              <h3 class="poster-title">Half Man</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Half Man</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Drama -->
+    <div class="subcat">
+      <div class="subcat-label"><h3>Drama</h3><small>Slow weather, real people</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-sage" data-status="airing" data-eps-aired="5">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Widow's Bay</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Widow's Bay</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-watched="true">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Legends</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Legends</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Unchosen</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Unchosen</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="278113" data-poster-type="tv" data-status="airing" data-eps-aired="8" data-eps-total="10">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Series</span></div>
+              <h3 class="poster-title">Gold Land</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Gold Land</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-sage" data-poster-id="299167" data-poster-type="tv" data-status="airing" data-eps-aired="2" data-eps-total="9">
+            <div class="poster-body">
+              <div class="poster-top"><span>Western</span><span>Series</span></div>
+              <h3 class="poster-title">Dutton Ranch</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Paramount+</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Dutton Ranch</p>
+            <div class="c-meta"><span class="status airing">Airing</span><span class="sep"></span><span>Yellowstone universe</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="259702" data-poster-type="tv" data-status="completed">
+            <div class="poster-body">
+              <div class="poster-top"><span>Magical Realism</span><span>Series</span></div>
+              <h3 class="poster-title">The House of the Spirits</h3>
+              <div class="poster-bottom"><span class="flag">🇪🇸</span><span>Allende</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The House of the Spirits</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Isabel Allende</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== IV. FILMS ========== -->
+  <section class="bloc is-films" data-poster-type="movie">
+    <div class="bloc-head">
+      <div class="bloc-num">04</div>
+      <h2 class="bloc-title">Films</h2>
+      <div class="bloc-meta">9 titles<br/>Cinema</div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>Korean Films</h3><small>From Seoul, in 90 minutes</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="1317512" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>Film</span></div>
+              <h3 class="poster-title">The World of Love</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Korean</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The World of Love</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="987470" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Mystery</span><span>Film</span></div>
+              <h3 class="poster-title">The Women in the White Car</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>Korean</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Women in the White Car</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-poster-id="1321179" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Sageuk</span><span>Film</span></div>
+              <h3 class="poster-title">The Man Who Lives With the King</h3>
+              <div class="poster-bottom"><span class="flag">🇰🇷</span><span>King's Warden</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Man Who Lives With the King</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>aka King's Warden</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>English-Language Films</h3><small>One evening, one sitting</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-ochre" data-poster-id="1400357" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Comedy</span><span>Film</span></div>
+              <h3 class="poster-title">The Christophers</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Christophers</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-cream" data-poster-id="1102883" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Mother Mary</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Mother Mary</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-poster-id="1242332" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Normal</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Normal</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-terracotta" data-poster-id="1159831" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">The Bride</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">The Bride</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-sage" data-status="completed" data-watched="true">
+            <div class="poster-body">
+              <div class="poster-top"><span>Drama</span><span>Film</span></div>
+              <h3 class="poster-title">Remarkably Bright Creatures</h3>
+              <div class="poster-bottom"><span class="flag">🇺🇸</span><span>Adaptation</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Remarkably Bright Creatures</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Shelby Van Pelt</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="843342" data-poster-type="movie">
+            <div class="poster-body">
+              <div class="poster-top"><span>Tragedy</span><span>Film</span></div>
+              <h3 class="poster-title">Hamlet</h3>
+              <div class="poster-bottom"><span class="flag">🇬🇧</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Hamlet</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Adaptation — TBC</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="ornament">· · · · ·</div>
+
+  <!-- ========== V. ANIME ========== -->
+  <section class="bloc is-anime" data-poster-type="series">
+    <div class="bloc-head">
+      <div class="bloc-num">05</div>
+      <h2 class="bloc-title">Anime</h2>
+      <div class="bloc-meta">8 titles<br/>🇯🇵 Animation</div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>Fantasy &amp; World-Building</h3><small>Long arcs, slow magic</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-midnight" data-poster-id="209867" data-poster-type="tv">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime · 28 eps</span></div>
+              <h3 class="poster-title">Frieren: Beyond Journey's End</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Crunchyroll</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Frieren: Beyond Journey's End</p>
+            <div class="c-meta"><span class="status completed">Completed S1</span><span class="sep"></span><span>28 eps</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre" data-status="airing" data-eps-aired="8" data-eps-total="13">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime</span></div>
+              <h3 class="poster-title">Witch Hat Atelier</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Manga ongoing</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Witch Hat Atelier</p>
+            <div class="c-meta"><span class="status airing">Adaptation TBA</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay" data-status="airing" data-eps-aired="7" data-eps-total="12">
+            <div class="poster-body">
+              <div class="poster-top"><span>Historical</span><span>Anime</span></div>
+              <h3 class="poster-title">Nippon Sangoku</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Nippon Sangoku</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ink" data-poster-id="260463" data-poster-type="tv" data-status="airing" data-eps-aired="7" data-eps-total="24">
+            <div class="poster-body">
+              <div class="poster-top"><span>Dark Fantasy</span><span>Anime</span></div>
+              <h3 class="poster-title">Daemons of the Shadow Realm</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Yomi no Tsugai</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Daemons of the Shadow Realm</p>
+            <div class="c-meta"><span class="status verify">To verify</span><span class="sep"></span><span>Yomi no Tsugai</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <div class="subcat">
+      <div class="subcat-label"><h3>Drama &amp; Strange Worlds</h3><small>The strange-shaped shelf</small></div>
+      <div class="poster-grid">
+
+        <article class="card">
+          <div class="poster v-terracotta">
+            <div class="poster-body">
+              <div class="poster-top"><span>Isekai</span><span>Anime</span></div>
+              <h3 class="poster-title">Re:Zero — Starting Life in Another World</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>S3</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Re:Zero</p>
+            <div class="c-meta"><span class="status airing">S3 — airing</span><span class="sep"></span><span>Crunchyroll</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-sage">
+            <div class="poster-body">
+              <div class="poster-top"><span>Surreal</span><span>Anime · 12 eps</span></div>
+              <h3 class="poster-title">Dorohedoro</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Netflix</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Dorohedoro</p>
+            <div class="c-meta"><span class="status completed">Completed S1</span><span class="sep"></span><span>12 eps</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-ochre">
+            <div class="poster-body">
+              <div class="poster-top"><span>Fantasy</span><span>Anime</span></div>
+              <h3 class="poster-title">Agents of the Four Seasons</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>—</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">Agents of the Four Seasons</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="poster v-clay">
+            <div class="poster-body">
+              <div class="poster-top"><span>Romance</span><span>Anime</span></div>
+              <h3 class="poster-title">An Observation Log of My Fiancée</h3>
+              <div class="poster-bottom"><span class="flag">🇯🇵</span><span>Who Calls Herself a Villainess</span></div>
+            </div>
+          </div>
+          <div class="caption">
+            <p class="c-title">An Observation Log of My Fiancée Who Calls Herself a Villainess</p>
+            <div class="c-meta"><span class="status verify">To verify</span></div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="colophon">
+    <div class="left">
+      Set in Space Grotesk &amp; Manrope<br/>
+      Posters via <a href="https://www.omdbapi.com/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">OMDb</a> · Tracking via <a href="https://trakt.tv/" target="_blank" rel="noopener" style="color: var(--accent); text-decoration: none;">Trakt</a>
+    </div>
+    <div class="center">
+      <div class="legend">
+        <span class="status completed">Completed</span>
+        <span class="status airing">Airing</span>
+        <span class="status verify">To verify</span>
+      </div>
+    </div>
+    <div class="right">
+      46 titles · 5 shelves<br/>
+      Vol. I — MMXXVI
+    </div>
+  </footer>
+
+  <p style="text-align: center; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 18px 0 0; opacity: 0.7;">
+    Data provided by OMDb and Trakt — neither endorses or certifies this list.
+  </p>
+
+</main>
+
+<!--
+  ╭──────────────────────────────────────────────────────────────╮
+  │  OMDb (posters + plot) + TRAKT (aired & next episode)        │
+  │                                                              │
+  │  Per-poster overrides:                                       │
+  │   data-imdb-id="tt1234567"  — IMDb id (best for both APIs)   │
+  │   data-poster-id="12345"    — TMDB id (Trakt cross-refs it)  │
+  │   data-poster-search="…"    — better search query            │
+  │   data-poster-type="series" | "tv" | "movie"                 │
+  │                                                              │
+  │  Manual status / ep counts (always win over API data):       │
+  │   data-status="airing|completed|upcoming"                    │
+  │   data-eps-aired="N"  data-eps-total="N"                     │
+  │   data-next-air="YYYY-MM-DD"                                 │
+  ╰──────────────────────────────────────────────────────────────╯
+-->
+<script>
+(async function watchlist() {
+  const OMDB_API_KEY      = "895ae429";
+  const TRAKT_CLIENT_ID   = "dd4135814638a322f4974bcfb2fb859758121f895bc6935e61a057bce953c7cc";
+  const TMDB_API_KEY      = "1b9abe1cd56510fa5dbc2c0e922e6b09"; // poster-only fallback when OMDb is blank
+
+  if (!OMDB_API_KEY && !TRAKT_CLIENT_ID) {
+    console.info("[Watchlist] No API keys configured — placeholder cards remain.");
+    return;
+  }
+
+  const CACHE_KEY = "watchlist-omdb-trakt-v3"; // bumped after reordering poster source to TMDB-first when pinned
+  const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6h
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || "{}"); } catch (e) {}
+  let dirty = false;
+
+  const cget = (k) => {
+    const e = cache[k];
+    if (!e || !e.ts) return undefined;
+    if (Date.now() - e.ts > CACHE_TTL_MS) return undefined;
+    return e.value;
+  };
+  const cset = (k, v) => { cache[k] = { ts: Date.now(), value: v }; dirty = true; };
+
+  // ---------- helpers ----------
+  function inheritType(el) {
+    let cur = el;
+    while (cur && cur !== document.body) {
+      if (cur.dataset && cur.dataset.posterType) return cur.dataset.posterType;
+      cur = cur.parentElement;
+    }
+    return null;
+  }
+  const normalizeType = (t) => (t === "series" ? "tv" : (t || null));
+
+  function formatDate(iso) {
+    const m = (iso || "").match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return iso;
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${parseInt(m[3], 10)} ${months[parseInt(m[2], 10) - 1]} ${m[1]}`;
+  }
+  function shortDescription(text, max) {
+    if (!text) return "";
+    const t = text.trim();
+    const sent = t.match(/^[^.!?]+[.!?]/);
+    if (sent && sent[0].length <= max) return sent[0].trim();
+    if (t.length <= max) return t;
+    const cut = t.slice(0, max);
+    const sp = cut.lastIndexOf(" ");
+    return cut.slice(0, sp > 0 ? sp : max).trim() + "…";
+  }
+  function readOverride(poster) {
+    const st = poster.dataset.status;
+    const aired = poster.dataset.epsAired;
+    const total = poster.dataset.epsTotal;
+    const next = poster.dataset.nextAir;
+    if (!st && !aired && !total && !next) return null;
+    return {
+      status: st || null,
+      aired: aired ? parseInt(aired, 10) : null,
+      total: total ? parseInt(total, 10) : null,
+      nextAir: next || null,
+    };
+  }
+
+  // ---------- OMDb ----------
+  const upscale = (u) => (!u || u === "N/A") ? null : u.replace(/_SX\d+(\.[a-z]+)$/i, "_SX600$1");
+
+  async function omdbCall(params) {
+    const qs = new URLSearchParams({ apikey: OMDB_API_KEY, ...params });
+    const res = await fetch(`https://www.omdbapi.com/?${qs}`);
+    if (!res.ok) throw new Error(`OMDb ${res.status}`);
+    const j = await res.json();
+    if (j.Response === "False") return null;
+    return {
+      imdbId: j.imdbID || null,
+      poster: upscale(j.Poster),
+      plot: (j.Plot && j.Plot !== "N/A") ? j.Plot : "",
+      year: (j.Year && j.Year !== "N/A") ? j.Year : "",
+      runtime: (j.Runtime && j.Runtime !== "N/A") ? j.Runtime : "",
+    };
+  }
+  async function omdbFetch({ imdbId, query, type }) {
+    if (!OMDB_API_KEY) return null;
+    const key = imdbId ? `omdb::id::${imdbId}` : `omdb::t::${type || "any"}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const params = imdbId ? { i: imdbId } : { t: query };
+      if (!imdbId && type) params.type = (type === "tv") ? "series" : type;
+      const data = await omdbCall(params);
+      cset(key, data);
+      return data;
+    } catch (e) {
+      console.warn("[Watchlist] OMDb error:", { imdbId, query }, e);
+      return null;
+    }
+  }
+
+  // ---------- Trakt ----------
+  async function traktCall(path) {
+    const res = await fetch(`https://api.trakt.tv${path}`, {
+      headers: {
+        "trakt-api-version": "2",
+        "trakt-api-key": TRAKT_CLIENT_ID,
+      },
+    });
+    if (!res.ok) throw new Error(`Trakt ${res.status}`);
+    return res.json();
+  }
+  async function traktByImdb(imdbId) {
+    const key = `trakt::imdb::${imdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/imdb/${imdbId}`);
+      const hit = (data || []).find(r => r.show || r.movie);
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt IMDb lookup failed:", imdbId, e); return null; }
+  }
+  async function traktByTmdb(tmdbId, type) {
+    const traktType = (type === "movie") ? "movie" : "show";
+    const key = `trakt::tmdb::${traktType}::${tmdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/tmdb/${tmdbId}?type=${traktType}`);
+      const hit = (data || [])[0];
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt TMDB lookup failed:", tmdbId, e); return null; }
+  }
+  async function traktByTitle(query, type) {
+    const traktType = (type === "movie") ? "movie" : "show";
+    const key = `trakt::q::${traktType}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const data = await traktCall(`/search/${traktType}?query=${encodeURIComponent(query)}`);
+      const hit = (data || [])[0];
+      const item = hit ? (hit.show || hit.movie) : null;
+      cset(key, item);
+      return item;
+    } catch (e) { console.warn("[Watchlist] Trakt title search failed:", query, e); return null; }
+  }
+  async function traktEpisodes(slug) {
+    const key = `trakt::eps::${slug}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const [info, lastEp, nextEp] = await Promise.all([
+        traktCall(`/shows/${slug}?extended=full`).catch(() => null),
+        traktCall(`/shows/${slug}/last_episode?extended=full`).catch(() => null),
+        traktCall(`/shows/${slug}/next_episode?extended=full`).catch(() => null),
+      ]);
+      const out = {
+        status: info ? info.status : "",
+        aired_episodes: info ? info.aired_episodes : 0,
+        last_episode: lastEp ? { season: lastEp.season, episode: lastEp.number, air_date: lastEp.first_aired } : null,
+        next_episode: nextEp ? { season: nextEp.season, episode: nextEp.number, air_date: nextEp.first_aired } : null,
+      };
+      cset(key, out);
+      return out;
+    } catch (e) { console.warn("[Watchlist] Trakt eps failed:", slug, e); return null; }
+  }
+  async function traktSeasonTotal(slug, seasonNumber) {
+    const key = `trakt::seasons::${slug}`;
+    let seasons = cget(key);
+    if (seasons === undefined) {
+      try {
+        seasons = await traktCall(`/shows/${slug}/seasons`);
+        cset(key, seasons);
+      } catch (e) { cset(key, null); seasons = null; }
+    }
+    if (!seasons) return null;
+    const s = seasons.find(x => x.number === seasonNumber);
+    return s ? s.episode_count : null;
+  }
+
+  // ---------- TMDB (poster fallback only) ----------
+  const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w500";
+
+  async function tmdbPosterByTmdbId(tmdbId, type) {
+    if (!TMDB_API_KEY) return null;
+    const tmdbType = (type === "movie") ? "movie" : "tv";
+    const key = `tmdbp::${tmdbType}::${tmdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/${tmdbType}/${tmdbId}?api_key=${TMDB_API_KEY}`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const url = data.poster_path ? `${TMDB_IMG_BASE}${data.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB id poster fallback failed:", tmdbId, e); return null; }
+  }
+
+  async function tmdbPosterByImdb(imdbId) {
+    if (!TMDB_API_KEY) return null;
+    const key = `tmdbp::imdb::${imdbId}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/find/${imdbId}?api_key=${TMDB_API_KEY}&external_source=imdb_id`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const hit = (data.tv_results && data.tv_results[0]) || (data.movie_results && data.movie_results[0]) || null;
+      const url = (hit && hit.poster_path) ? `${TMDB_IMG_BASE}${hit.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB imdb poster fallback failed:", imdbId, e); return null; }
+  }
+
+  async function tmdbPosterByTitle(query, type) {
+    if (!TMDB_API_KEY) return null;
+    const tmdbType = (type === "movie") ? "movie" : "tv";
+    const key = `tmdbp::q::${tmdbType}::${query}`;
+    const cached = cget(key);
+    if (cached !== undefined) return cached;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/${tmdbType}?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`);
+      if (!res.ok) throw new Error(`TMDB ${res.status}`);
+      const data = await res.json();
+      const hit = (data.results || []).find(r => r.poster_path);
+      const url = hit ? `${TMDB_IMG_BASE}${hit.poster_path}` : null;
+      cset(key, url);
+      return url;
+    } catch (e) { console.warn("[Watchlist] TMDB title poster fallback failed:", query, e); return null; }
+  }
+
+  // ---------- formatters ----------
+  function formatOverride(o) {
+    if (!o) return null;
+    if (o.status === "completed") return { cls: "completed", label: "Completed", detail: o.total ? `${o.total} eps` : "" };
+    if (o.status === "airing" || o.aired != null) {
+      let detail = "";
+      if (o.aired != null && o.total != null) detail = `${o.aired} of ${o.total} eps`;
+      else if (o.aired != null) detail = `${o.aired} eps so far`;
+      return { cls: "airing", label: "Airing", detail };
+    }
+    if (o.status === "upcoming") return { cls: "verify", label: "Upcoming", detail: o.nextAir ? formatDate(o.nextAir) : "" };
+    return null;
+  }
+  function formatStatus(d) {
+    if (!d) return null;
+    if (d.type === "tv") {
+      const ended = d.status === "ended" || d.status === "canceled";
+      const last = d.last_episode, next = d.next_episode;
+      let aired = null, total = null, season = null;
+      if (last) {
+        aired = last.episode;
+        season = last.season;
+        total = d.season_total != null ? d.season_total : null;
+      }
+      const suffix = (season && season > 1) ? ` · S${season}` : "";
+
+      if (ended && !next) {
+        if (aired != null && total != null) return { cls: "completed", label: "Completed", detail: `${total} eps${suffix}` };
+        return { cls: "completed", label: "Completed", detail: d.aired_episodes ? `${d.aired_episodes} eps` : "" };
+      }
+      if (aired != null && total != null && aired >= total && next && next.season > season) {
+        return { cls: "completed", label: `S${season} complete`, detail: `${total} eps` };
+      }
+      if (aired != null && total != null) return { cls: "airing", label: "Airing", detail: `${aired} of ${total} eps${suffix}` };
+      if (aired != null) return { cls: "airing", label: "Airing", detail: `${aired} eps so far${suffix}` };
+      if (d.aired_episodes > 0) return { cls: "airing", label: "Airing", detail: `${d.aired_episodes} eps so far` };
+      return { cls: "verify", label: "Upcoming", detail: "" };
+    }
+    if (d.type === "movie") {
+      const parts = [d.year, d.runtime].filter(Boolean);
+      return { cls: "completed", label: "Released", detail: parts.join(" · ") };
+    }
+    return null;
+  }
+
+  // ---------- per-card pipeline ----------
+  async function processCard(poster) {
+    const titleEl = poster.querySelector(".poster-title");
+    if (!titleEl) return;
+    const title = titleEl.textContent.trim();
+
+    const imdbId = poster.dataset.imdbId || null;
+    const tmdbId = poster.dataset.posterId || null;
+    const type = normalizeType(poster.dataset.posterType || inheritType(poster));
+    const query = poster.dataset.posterSearch || title;
+    const isTV = (type === "tv");
+
+    // 1. When data-poster-id is pinned, fetch the TMDB poster FIRST.
+    //    This guarantees your manually-verified posters always render even
+    //    when OMDb's title search lands on a different show by mistake.
+    let posterUrl = null;
+    if (tmdbId) posterUrl = await tmdbPosterByTmdbId(tmdbId, type);
+
+    // 2. Resolve via Trakt to discover slug + IMDb id (when not pinned).
+    let traktItem = null;
+    if (imdbId)       traktItem = await traktByImdb(imdbId);
+    else if (tmdbId)  traktItem = await traktByTmdb(tmdbId, type);
+    else              traktItem = await traktByTitle(query, type);
+
+    const resolvedImdb = imdbId || (traktItem && traktItem.ids && traktItem.ids.imdb) || null;
+    const slug         = (traktItem && traktItem.ids && traktItem.ids.slug) || null;
+
+    // 3. OMDb fills plot (and poster when no TMDB id was pinned).
+    let omdbData = resolvedImdb ? await omdbFetch({ imdbId: resolvedImdb }) : null;
+    if (!omdbData) omdbData = await omdbFetch({ query, type });
+    if (!posterUrl) posterUrl = omdbData ? omdbData.poster : null;
+
+    // 4. Final TMDB poster fallbacks for cards with no pinned id.
+    if (!posterUrl && resolvedImdb) posterUrl = await tmdbPosterByImdb(resolvedImdb);
+    if (!posterUrl)                 posterUrl = await tmdbPosterByTitle(query, type);
+
+    // Trakt fills episode tracking for TV.
+    let episodes = null;
+    if (isTV && slug) {
+      episodes = await traktEpisodes(slug);
+      if (episodes && episodes.last_episode) {
+        const st = await traktSeasonTotal(slug, episodes.last_episode.season);
+        if (st != null) episodes.season_total = st;
+      }
+    }
+
+    applyToCard(poster, {
+      type: isTV ? "tv" : (type || "movie"),
+      poster: posterUrl,
+      plot: omdbData ? omdbData.plot : "",
+      year: omdbData ? omdbData.year : "",
+      runtime: omdbData ? omdbData.runtime : "",
+      ...(episodes || {}),
+    });
+  }
+
+  function applyToCard(poster, d) {
+    const titleEl = poster.querySelector(".poster-title");
+    const title = titleEl ? titleEl.textContent.trim() : "";
+
+    if (d.poster && !poster.querySelector("img")) {
+      const img = new Image();
+      img.src = d.poster;
+      img.alt = title;
+      img.loading = "lazy";
+      img.decoding = "async";
+      poster.insertBefore(img, poster.firstChild);
+    }
+
+    const card = poster.closest(".card");
+    if (!card) return;
+    const caption = card.querySelector(".caption");
+    if (!caption) return;
+
+    const meta = caption.querySelector(".c-meta");
+    const override = readOverride(poster);
+    const s = formatOverride(override) || formatStatus(d);
+    if (meta && s) {
+      const status = document.createElement("span");
+      status.className = `status ${s.cls}`;
+      status.textContent = s.label;
+      meta.replaceChildren(status);
+      if (s.detail) {
+        const sep = document.createElement("span"); sep.className = "sep";
+        const det = document.createElement("span"); det.textContent = s.detail;
+        meta.append(sep, det);
+      }
+      const nextAirIso = (override && override.nextAir)
+        || (d.next_episode && d.next_episode.air_date)
+        || null;
+      if (nextAirIso) {
+        const sep = document.createElement("span"); sep.className = "sep";
+        const next = document.createElement("span"); next.textContent = `Next: ${formatDate(nextAirIso)}`;
+        meta.append(sep, next);
+      }
+    }
+
+    if (d.plot && !caption.querySelector(".c-overview")) {
+      const p = document.createElement("p");
+      p.className = "c-overview";
+      p.textContent = shortDescription(d.plot, 180);
+      caption.appendChild(p);
+    }
+  }
+
+  // Process cards in parallel batches of 5 — keeps under Trakt's
+  // 1000-req / 5-min limit while letting the page populate much faster.
+  const posters = Array.from(document.querySelectorAll(".poster"));
+  const BATCH = 5;
+  let filled = 0, missed = 0;
+  for (let i = 0; i < posters.length; i += BATCH) {
+    await Promise.all(posters.slice(i, i + BATCH).map(async (poster) => {
+      try {
+        await processCard(poster);
+        if (poster.querySelector("img")) filled++; else missed++;
+      } catch (e) {
+        console.warn("[Watchlist] card failed:", e);
+        missed++;
+      }
+    }));
+  }
+  if (dirty) {
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch (e) {}
+  }
+  console.info(`[Watchlist] OMDb+Trakt: ${filled} posters filled, ${missed} not found.`);
+})();
+</script>
+</body>
+</html>
+
