@@ -3,10 +3,293 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <title>TDEE &amp; Deficit Calculator</title>
+    <!--
+      Single self-contained page: React + the calculator are loaded here with
+      no build step, so it runs anywhere — opened directly from a file, or
+      served by GitHub Pages from either the Actions artifact or the branch root.
+    -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
   <body style="margin: 0">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div id="root" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; padding: 24px; color: #475569">
+      Loading the calculator…
+    </div>
+
+    <script type="text/babel" data-presets="react">
+      const { useMemo, useState } = React;
+
+      // ---- Pure calculation helpers -------------------------------------
+
+      function calcBmr({ weightKg, heightCm, age, bodyFatPct }) {
+        const hasBf = bodyFatPct !== "" && bodyFatPct != null && !Number.isNaN(Number(bodyFatPct));
+        if (hasBf) {
+          const leanMass = weightKg * (1 - Number(bodyFatPct) / 100);
+          return { bmr: 370 + 21.6 * leanMass, leanMass, method: "Katch-McArdle" };
+        }
+        const bmr = 10 * weightKg + 6.25 * heightCm - 5 * age - 161; // Mifflin-St Jeor, female
+        return { bmr, leanMass: null, method: "Mifflin-St Jeor" };
+      }
+
+      function calcNeat({ steps, weightKg }) {
+        const perStep = 0.04 * (weightKg / 70);
+        return steps * perStep;
+      }
+
+      function calcExercise({ sessionsPerWeek, kcalPerSession }) {
+        return (sessionsPerWeek * kcalPerSession) / 7;
+      }
+
+      function calcTdee(inputs) {
+        const { bmr, leanMass, method } = calcBmr(inputs);
+        const neat = calcNeat(inputs);
+        const exercise = calcExercise(inputs);
+        const tef = 0.1 * (bmr + neat + exercise);
+        const tdee = bmr + neat + exercise + tef;
+        return { bmr, leanMass, method, neat, exercise, tef, tdee };
+      }
+
+      const round = (n) => Math.round(n);
+
+      // ---- Presentational pieces ----------------------------------------
+
+      function Row({ label, value, sub, accent }) {
+        return (
+          <div style={styles.row}>
+            <div>
+              <div style={styles.rowLabel}>{label}</div>
+              {sub ? <div style={styles.rowSub}>{sub}</div> : null}
+            </div>
+            <div style={{ ...styles.rowValue, ...(accent ? { color: accent } : null) }}>{value}</div>
+          </div>
+        );
+      }
+
+      function Field({ label, children }) {
+        return (
+          <label style={styles.field}>
+            <span style={styles.fieldLabel}>{label}</span>
+            {children}
+          </label>
+        );
+      }
+
+      function StackedBar({ segments }) {
+        const total = segments.reduce((s, x) => s + x.value, 0) || 1;
+        return (
+          <div style={styles.barTrack} aria-hidden="true">
+            {segments.map((s) => (
+              <div
+                key={s.label}
+                title={`${s.label}: ${round(s.value)} kcal`}
+                style={{ width: `${(s.value / total) * 100}%`, background: s.color, ...styles.barSeg }}
+              />
+            ))}
+          </div>
+        );
+      }
+
+      // ---- Main component -----------------------------------------------
+
+      function TDEECalculator() {
+        const [sex, setSex] = useState("female");
+        const [age, setAge] = useState(36);
+        const [heightCm, setHeightCm] = useState(152.5);
+        const [weightKg, setWeightKg] = useState(50.3);
+        const [bodyFatPct, setBodyFatPct] = useState(33);
+        const [steps, setSteps] = useState(10000);
+        const [sessionsPerWeek, setSessionsPerWeek] = useState(4);
+        const [kcalPerSession, setKcalPerSession] = useState(300);
+        const [deficit, setDeficit] = useState(300);
+
+        const num = (v) => (v === "" ? 0 : Number(v));
+
+        const r = useMemo(
+          () =>
+            calcTdee({
+              weightKg: num(weightKg),
+              heightCm: num(heightCm),
+              age: num(age),
+              bodyFatPct: bodyFatPct,
+              steps: num(steps),
+              sessionsPerWeek: num(sessionsPerWeek),
+              kcalPerSession: num(kcalPerSession),
+            }),
+          [weightKg, heightCm, age, bodyFatPct, steps, sessionsPerWeek, kcalPerSession]
+        );
+
+        const target = r.tdee - num(deficit);
+        const fatLossPerWeek = (num(deficit) * 7) / 7700;
+        const fatLossPerMonth = (num(deficit) * 30) / 7700;
+        const proteinLow = num(weightKg) * 1.8;
+        const proteinHigh = num(weightKg) * 2.2;
+
+        const warnings = [];
+        if (target < r.bmr) warnings.push("Target intake is below your BMR — too aggressive for preserving lean mass.");
+        if (target < 1350) warnings.push("Target intake is below 1,350 kcal — risks muscle loss and nutrient gaps.");
+        if (r.tdee > 0 && num(deficit) > 0.2 * r.tdee)
+          warnings.push(`Deficit exceeds 20% of TDEE (${round(0.2 * r.tdee)} kcal) — ease off to protect lean mass.`);
+
+        const segments = [
+          { label: "BMR", value: r.bmr, color: "#4f6df5" },
+          { label: "Steps / NEAT", value: r.neat, color: "#23a094" },
+          { label: "Exercise", value: r.exercise, color: "#f59e0b" },
+          { label: "TEF", value: r.tef, color: "#a855f7" },
+        ];
+
+        return (
+          <div style={styles.page}>
+            <div style={styles.card}>
+              <header style={styles.header}>
+                <h1 style={styles.title}>TDEE &amp; Deficit Calculator</h1>
+                <p style={styles.subtitle}>
+                  Component-based energy model — built to lose fat while holding onto lean mass.
+                </p>
+              </header>
+
+              <section style={styles.section}>
+                <h2 style={styles.h2}>Your details</h2>
+                <div style={styles.grid}>
+                  <Field label="Sex">
+                    <select style={styles.input} value={sex} onChange={(e) => setSex(e.target.value)}>
+                      <option value="female">Female</option>
+                      <option value="male">Male</option>
+                    </select>
+                  </Field>
+                  <Field label="Age">
+                    <input style={styles.input} type="number" value={age} onChange={(e) => setAge(e.target.value)} />
+                  </Field>
+                  <Field label="Height (cm)">
+                    <input style={styles.input} type="number" value={heightCm} onChange={(e) => setHeightCm(e.target.value)} />
+                  </Field>
+                  <Field label="Weight (kg)">
+                    <input style={styles.input} type="number" value={weightKg} onChange={(e) => setWeightKg(e.target.value)} />
+                  </Field>
+                  <Field label="Body fat % (optional)">
+                    <input
+                      style={styles.input}
+                      type="number"
+                      placeholder="leave blank to skip"
+                      value={bodyFatPct}
+                      onChange={(e) => setBodyFatPct(e.target.value)}
+                    />
+                  </Field>
+                </div>
+                <p style={styles.note}>
+                  Using <strong>{r.method}</strong>
+                  {r.leanMass != null ? ` · lean mass ≈ ${r.leanMass.toFixed(1)} kg` : " (no body-fat % given)"}.
+                </p>
+              </section>
+
+              <section style={styles.section}>
+                <h2 style={styles.h2}>Activity</h2>
+                <Field label={`Average daily steps: ${Number(steps).toLocaleString()}`}>
+                  <input style={styles.slider} type="range" min={2000} max={15000} step={250} value={steps} onChange={(e) => setSteps(e.target.value)} />
+                </Field>
+                <div style={styles.grid}>
+                  <Field label="Training sessions / week">
+                    <input style={styles.input} type="number" min={0} value={sessionsPerWeek} onChange={(e) => setSessionsPerWeek(e.target.value)} />
+                  </Field>
+                  <Field label="kcal per session">
+                    <input style={styles.input} type="number" min={0} value={kcalPerSession} onChange={(e) => setKcalPerSession(e.target.value)} />
+                  </Field>
+                </div>
+              </section>
+
+              <section style={styles.section}>
+                <h2 style={styles.h2}>Target deficit</h2>
+                <Field label={`Daily deficit: ${round(num(deficit))} kcal`}>
+                  <input style={styles.slider} type="range" min={0} max={500} step={10} value={deficit} onChange={(e) => setDeficit(e.target.value)} />
+                </Field>
+              </section>
+
+              <section style={styles.section}>
+                <h2 style={styles.h2}>Where your calories come from</h2>
+                <StackedBar segments={segments} />
+                <div style={styles.legend}>
+                  {segments.map((s) => (
+                    <span key={s.label} style={styles.legendItem}>
+                      <span style={{ ...styles.dot, background: s.color }} /> {s.label}
+                    </span>
+                  ))}
+                </div>
+                <Row label="BMR" sub="Resting metabolism" value={`${round(r.bmr)} kcal`} />
+                <Row label="Steps / NEAT" sub={`${Number(steps).toLocaleString()} steps`} value={`${round(r.neat)} kcal`} />
+                <Row label="Exercise" sub="Daily average of training" value={`${round(r.exercise)} kcal`} />
+                <Row label="TEF" sub="Thermic effect of food (10%)" value={`${round(r.tef)} kcal`} />
+              </section>
+
+              <section style={{ ...styles.section, ...styles.results }}>
+                <Row label="TDEE" sub="Total daily energy expenditure" value={`${round(r.tdee)} kcal`} accent="#0f172a" />
+                <Row label="Target intake" sub={`TDEE − ${round(num(deficit))} kcal deficit`} value={`${round(target)} kcal`} accent="#1d4ed8" />
+                <Row
+                  label="Projected fat loss"
+                  sub="At 7,700 kcal ≈ 1 kg"
+                  value={`${fatLossPerWeek.toFixed(2)} kg/wk · ${fatLossPerMonth.toFixed(1)} kg/mo`}
+                  accent="#15803d"
+                />
+                <Row
+                  label="Protein target"
+                  sub="1.8–2.2 g/kg to preserve lean mass"
+                  value={`${round(proteinLow)}–${round(proteinHigh)} g/day`}
+                  accent="#9333ea"
+                />
+              </section>
+
+              {warnings.length > 0 && (
+                <section style={styles.warnBox}>
+                  <strong style={{ display: "block", marginBottom: 6 }}>⚠️ Lean-mass guardrails</strong>
+                  <ul style={styles.warnList}>
+                    {warnings.map((w) => (
+                      <li key={w}>{w}</li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <footer style={styles.footer}>
+                Estimates only — adjust based on real-world weight trends over 2–3 weeks.
+              </footer>
+            </div>
+          </div>
+        );
+      }
+
+      // ---- Styles -------------------------------------------------------
+
+      const styles = {
+        page: { minHeight: "100vh", background: "#eef2f9", padding: "16px", boxSizing: "border-box", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif", color: "#0f172a" },
+        card: { maxWidth: 520, margin: "0 auto", background: "#fff", borderRadius: 18, boxShadow: "0 10px 30px rgba(15,23,42,0.08)", padding: 20, boxSizing: "border-box" },
+        header: { marginBottom: 8 },
+        title: { fontSize: 22, margin: "0 0 4px", fontWeight: 700 },
+        subtitle: { margin: 0, fontSize: 13, color: "#64748b", lineHeight: 1.4 },
+        section: { borderTop: "1px solid #eef2f7", paddingTop: 16, marginTop: 16 },
+        h2: { fontSize: 14, textTransform: "uppercase", letterSpacing: 0.5, color: "#64748b", margin: "0 0 12px" },
+        grid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 },
+        field: { display: "flex", flexDirection: "column", gap: 6, fontSize: 13 },
+        fieldLabel: { color: "#475569", fontWeight: 600 },
+        input: { padding: "10px 12px", border: "1px solid #d6dee8", borderRadius: 10, fontSize: 15, width: "100%", boxSizing: "border-box", background: "#fff" },
+        slider: { width: "100%", accentColor: "#4f6df5" },
+        note: { fontSize: 12, color: "#64748b", marginTop: 10, marginBottom: 0 },
+        row: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" },
+        rowLabel: { fontSize: 14, fontWeight: 600 },
+        rowSub: { fontSize: 12, color: "#94a3b8" },
+        rowValue: { fontSize: 15, fontWeight: 700, textAlign: "right", whiteSpace: "nowrap" },
+        results: { background: "#f8fafc", borderRadius: 12, padding: 14, border: "1px solid #eef2f7" },
+        barTrack: { display: "flex", height: 16, borderRadius: 8, overflow: "hidden", background: "#eef2f7" },
+        barSeg: { height: "100%" },
+        legend: { display: "flex", flexWrap: "wrap", gap: 12, margin: "10px 0 4px", fontSize: 12, color: "#475569" },
+        legendItem: { display: "inline-flex", alignItems: "center", gap: 6 },
+        dot: { width: 10, height: 10, borderRadius: 3, display: "inline-block" },
+        warnBox: { marginTop: 16, background: "#fff7ed", border: "1px solid #fed7aa", color: "#9a3412", borderRadius: 12, padding: 14, fontSize: 13 },
+        warnList: { margin: 0, paddingLeft: 18, lineHeight: 1.5 },
+        footer: { marginTop: 16, fontSize: 11, color: "#94a3b8", textAlign: "center" },
+      };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<TDEECalculator />);
+    </script>
   </body>
 </html>
